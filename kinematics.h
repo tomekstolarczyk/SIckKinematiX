@@ -3,11 +3,15 @@
 
 typedef struct {
     double data[16];
-} Matri4x4;
+} Matrix44;
 
-void createIdentityMatrix(Matri4x4* M);
-void multiply4x4Matrix(Matri4x4* M1, Matri4x4* M2, Matri4x4* result);
-void createMDHParametersMatrix(double a, double alpha, double d, double theta, Matri4x4* result);
-void ForwardKinematics(const double thetas[6], Matri4x4* result);
+void createIdentityMatrix(Matrix44* M);
+
+void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result);
+
+void createMDHParametersMatrix(double a, double alpha, double d, double theta, Matrix44* result);
+
+void ForwardKinematics(const double thetas[6], Matrix44* result);
 
 #endif
+
