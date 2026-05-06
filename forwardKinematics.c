@@ -1,7 +1,8 @@
+#define _USE_MATH_DEFINES // zeby dzialalo M_PI - makro dla liczby PI
 #include <stdio.h>
 #include <math.h>
 
-#include "kinematics.h"
+#include "forwardKinematics.h"
 
 void create4x4IdentityMatrix(Matrix44* M)
 {
@@ -102,3 +103,36 @@ void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result)
     *result = temp;
 }
 
+void forwardKinematics(const double* thetas, Matrix44* result)
+{
+    // hardcoded wymiary ramion robota
+    const double l1 = 0.6;
+    const double l2 = 0.5;
+    const double l3 = 0.4;
+    const double l4 = 0.3;
+    const double l5 = 0.2;
+    const double l6 = 0.1;
+
+    // parametry do MDH robot-specific tak samo jak wymiary ramion
+    const double a[6]     = {0, 0, -l3, -l5, 0, 0};
+    const double alpha[6] = {0, M_PI/2.0, 0, 0, -M_PI/2.0, M_PI/2.0};
+    const double d[6]     = {l1, 0, 0, l6, 0, 0};
+    const double offsets[6] = {M_PI/2.0, -M_PI/2.0, 0, M_PI/2.0, 0, M_PI/2.0}; //offsety
+
+    //tworzymy macierz jednostkowa zeby od czegos zaczac obliczenia 
+    Matrix44 currentM;
+    create4x4IdentityMatrix(&currentM);
+
+    // tworzymy macierze transformacji, przemnazamy przez dotychczasowy wynik etc. 
+    // wszystko zgodnie z metodyka Manipulator Forward Kinematics ("Intro to robotics", John Craig)
+    Matrix44 jointMatrix; 
+    double q; // theta + offsets
+    for(size_t i = 0; i<6; i++)
+    {
+        q = offsets[i]+thetas[i];
+        createMDHTransformMatrix(a[i],alpha[i],d[i],q,&jointMatrix);
+        multiply4x4Matrix(&currentM, &jointMatrix, &currentM);
+    }
+
+    *result = currentM;
+}

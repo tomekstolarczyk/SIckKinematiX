@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "kinematics.h"
+#include "forwardKinematics.h"
 
 int main()
 {
-    Matrix44 identity, test, result;
+    Matrix44 identity, test, result1, result2;
 
     // test czy dziala tworzenie jednostkowych
     create4x4IdentityMatrix(&identity);
@@ -16,9 +16,14 @@ int main()
     printMatrix44(&test);
 
     // test czy dziala mnozenie macierzy
-    multiply4x4Matrix(&identity, &test, &result);
+    multiply4x4Matrix(&identity, &test, &result1);
     printf("Multiplication result:\n");
-    printMatrix44(&result);
+    printMatrix44(&result1);
+
+    // forward kinematics
+    double thetas[] = {0.1,0.2,0.3,0.4,0.5,0.6};
+    forwardKinematics(thetas, &result2);
+    printMatrix44(&result2);
 
     return 0;
 }
