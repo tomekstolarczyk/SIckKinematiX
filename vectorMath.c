@@ -3,35 +3,46 @@
 
 #include "vectorMath.h"
 
-void myVectorSub(const double* a, const double* b, double* out)
+// odejmowanie wektorowe 
+void myVectorSub(const Vector3D* v1, const Vector3D* v2, Vector3D* vout)
 {
-    out[0] = a[0] - b[0];
-    out[1] = a[1] - b[1];
-    out[2] = a[2] - b[2];
+    vout->x = v1->x - v2->x;
+    vout->y = v1->y - v2->y;
+    vout->z = v1->z - v2->z;
 }
 
-double myVectorDotProduct(const double* a, const double* b)
+// iloczyny skalarny
+double myVectorDotProduct(const Vector3D* v1, const Vector3D* v2)
 {
-    return ((a[0]*b[0])+(a[1]*b[1])+(a[2]*b[2]));
+    return (v1->x * v2->x) + (v1->y * v2->y) + (v1->z * v2->z);
 }
 
-void myVectorCrossProduct(const double* a, const double* b, double* out)
+// dlugosc wektorowa
+double myVectorLength(const Vector3D* v)
 {
-
+    return sqrt(myVectorDotProduct(v,v));
 }
 
-double myVectorLength(const double* v)
-{
-
+// iloczyn wektorowy
+void myVectorCrossProduct(const Vector3D* v1, const Vector3D* v2, Vector3D* vout)
+{   
+    // podejscie analityczne
+    vout->x = (v1->y)*(v2->z) - (v1->z)*(v2->y);
+    vout->y = (v1->z)*(v2->x) - (v1->x)*(v2->z);
+    vout->z =  (v1->x)*(v2->y) - (v1->y)*(v2->x);
 }
 
-void myVectorNormalization(double* v)
+// normalizacja 
+void myVectorNormalization(Vector3D* v)
 {
+    double length = myVectorLength(v);
 
+    // epsilon maszynowy - zabezpieczamy przed dzieleniem przez zero
+    if(length>1e-7)
+    {
+        v->x = (double)v->x/length;
+        v->y = (double)v->y/length;
+        v->z = (double)v->z/length;
+    }
+    
 }
-
-void myProjectPlane(const double* v, const double* normal, double* out)
-{
-
-}
-

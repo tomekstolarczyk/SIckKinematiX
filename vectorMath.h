@@ -1,16 +1,21 @@
 #ifndef vectorMath_h
 #define vectorMath_h
 
+typedef struct{
+    double x;
+    double y;
+    double z;
+} Vector3D;
+
 // odejmowanie wektorowe 
-void myVectorSub(const double* a, const double* b, double* out);
+void myVectorSub(const Vector3D* v1, const Vector3D* v2, Vector3D* vout);
 
 // iloczyny skalarny, wektorowy i dlugosc wektorowa
-double myVectorDotProduct(const double* a, const double* b);
-void myVectorCrossProduct(const double* a, const double* b, double* out);
-double myVectorLength(const double* v);
+double myVectorDotProduct(const Vector3D* v1, const Vector3D* v2);
+double myVectorLength(const Vector3D* v);
+void myVectorCrossProduct(const Vector3D* v1, const Vector3D* v2, Vector3D* vout);
 
-// normalizacja i rzutowanie na plaszczyzne
-void myVectorNormalization(double* v);
-void myProjectPlane(const double* v, const double* normal, double* out);
+// normalizacja 
+void myVectorNormalization(Vector3D* v);
 
 #endif
