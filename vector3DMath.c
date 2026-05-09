@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "vectorMath.h"
+#include "vector3DMath.h"
 
 // odejmowanie wektorowe 
 void myVectorSub(const Vector3D* v1, const Vector3D* v2, Vector3D* vout)
