@@ -43,6 +43,18 @@ void myVectorNormalization(Vector3D* v)
         v->x = (double)v->x/length;
         v->y = (double)v->y/length;
         v->z = (double)v->z/length;
-    }
-    
+    }   
+}
+
+void myVectorProjectOnPlane(const Vector3D* v, const Vector3D* n, Vector3D* vout)
+{
+    // wedlug wzoru na rzutowanie ortogonalne
+    // (oryginalny wektor v minus część wzdłuż osi normalnej)
+
+    double dot = myVectorDotProduct(v,n);
+
+    // odejmujemy wektorowo
+    vout->x = v->x - (dot * n->x);
+    vout->y = v->y - (dot * n->y);
+    vout->y = v->y - (dot * n->z);
 }

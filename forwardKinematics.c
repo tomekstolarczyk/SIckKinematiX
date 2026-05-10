@@ -103,7 +103,7 @@ void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result)
     *result = temp;
 }
 
-void forwardKinematics(const double* thetas, Matrix44* result)
+void forwardKinematics(const double* thetas, Matrix44* results)
 {
     // hardcoded wymiary ramion robota
     const double l1 = 0.6;
@@ -132,7 +132,8 @@ void forwardKinematics(const double* thetas, Matrix44* result)
         q = offsets[i]+thetas[i];
         createMDHTransformMatrix(a[i],alpha[i],d[i],q,&jointMatrix);
         multiply4x4Matrix(&currentM, &jointMatrix, &currentM);
-    }
 
-    *result = currentM;
+        // dla inverse kinematics bedziemy chcieli miec wszystkie posrednie wyniki tez
+        results[i] = currentM;
+    }
 }

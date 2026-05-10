@@ -3,7 +3,8 @@
 
 int main()
 {
-    Matrix44 identity, test, result1, result2;
+    Matrix44 identity, test, result1;
+    Matrix44 results[6];
 
     // test czy dziala tworzenie jednostkowych
     create4x4IdentityMatrix(&identity);
@@ -17,13 +18,18 @@ int main()
 
     // test czy dziala mnozenie macierzy
     multiply4x4Matrix(&identity, &test, &result1);
-    printf("Multiplication result:\n");
+    printf("Multiplication results:\n");
     printMatrix44(&result1);
 
     // forward kinematics
     double thetas[] = {0.1,0.2,0.3,0.4,0.5,0.6};
-    forwardKinematics(thetas, &result2);
-    printMatrix44(&result2);
+    forwardKinematics(thetas, results);
+    printMatrix44(&results[0]);
+    printMatrix44(&results[1]);
+    printMatrix44(&results[2]);
+    printMatrix44(&results[3]);
+    printMatrix44(&results[4]);
+    printMatrix44(&results[5]);
 
     return 0;
 }

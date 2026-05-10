@@ -13,7 +13,7 @@ void printMatrix44(const Matrix44* M); // do testow lokalnie
 
 void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result);
 
-void forwardKinematics(const double* thetas, Matrix44* result);
+void forwardKinematics(const double* thetas, Matrix44* results);
 
 #endif
 

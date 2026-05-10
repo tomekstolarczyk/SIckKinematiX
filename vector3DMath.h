@@ -15,7 +15,10 @@ double myVectorDotProduct(const Vector3D* v1, const Vector3D* v2);
 double myVectorLength(const Vector3D* v);
 void myVectorCrossProduct(const Vector3D* v1, const Vector3D* v2, Vector3D* vout);
 
-// normalizacja 
+// normalizacja i rzutowanie na plaszyczne
 void myVectorNormalization(Vector3D* v);
+void myVectorProjectOnPlane(const Vector3D* v, const Vector3D* n, Vector3D* vout);
+
+
 
 #endif
