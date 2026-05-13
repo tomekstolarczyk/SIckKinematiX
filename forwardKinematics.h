@@ -1,19 +1,17 @@
-#ifndef kinematics_h 
-#define kinematics_h
+#include "pureMath.h"
+
+#ifndef forwardKinematics_h
+#define forwardKinematics_h
 
 typedef struct {
-    double data[16];
-} Matrix44;
+    double a[6];
+    double alpha[6];
+    double d[6];
+    double offsets[6];
+} RobotArm6DoF;
 
-void create4x4IdentityMatrix(Matrix44* M);
 
 void createMDHTransformMatrix(double a, double alpha, double d, double theta, Matrix44* result);
-
-void printMatrix44(const Matrix44* M); // do testow lokalnie
-
-void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result);
-
-void forwardKinematics(const double* thetas, Matrix44* results);
+void forwardKinematics(const RobotArm6DoF* robotArm, const double* thetas, Matrix44* results);
 
 #endif
-

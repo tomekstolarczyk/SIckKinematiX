@@ -1,9 +1,8 @@
 #include <stdio.h>
 
-#include "forwardKinematics.h"
-#include "vector3DMath.h"
+#include "inverseKinematicsCCD.h"
 
-void inverseKinematicsCCD(double* thetas, const Vector3D* target)
+void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* target)
 {
     Matrix44 fkResults[6];
     int max_iters = 100;
@@ -13,7 +12,7 @@ void inverseKinematicsCCD(double* thetas, const Vector3D* target)
     for(size_t iter = 0; iter < max_iters ; iter++)
     {
         // sprawdzamy gdzie obecnie sie znajdujemy
-        forwardKinematics(fkResults, thetas);
+        forwardKinematics(&ramie, fkResults, thetas);
         Vector3D currentEndEffectorPosition = {fkResults[5].data[3], fkResults[5].data[7], fkResults[5].data[11]};
 
         // sprawdzamy czy cel trafiony
