@@ -12,7 +12,7 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
     for(size_t iter = 0; iter < max_iters ; iter++)
     {
         // sprawdzamy gdzie obecnie sie znajdujemy
-        forwardKinematics(&ramie, fkResults, thetas);
+        forwardKinematics(ramie, thetas, fkResults);
         Vector3D currentEndEffectorPosition = {fkResults[5].data[3], fkResults[5].data[7], fkResults[5].data[11]};
 
         // sprawdzamy czy cel trafiony
@@ -25,9 +25,37 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
         }
 
         // 2. jesli cel nietrafiony to petla wewnetrzna po stawach od konca do bazy
-        for(size_t i = 5 ; i>=0; i--)
+        for(int i = 4 ; i>=0; i--)
         {
-            // TODO
+            Vector3D currentJointPosition = {fkResults[i].data[3], fkResults[i].data[7], fkResults[i].data[11]};
+
+            Vector3D relativeToCurrentJointTargetPosition;
+            myVectorSub(target, &currentJointPosition, &relativeToCurrentJointTargetPosition);
+
+            Vector3D relativeToCurrentJointGripperPosition;
+            myVectorSub(&currentEndEffectorPosition, &currentJointPosition, &relativeToCurrentJointGripperPosition);
+
+            Vector3D rotationAxis = {fkResults[i].data[2], fkResults[i].data[6], fkResults[i].data[10]};
+            Vector3D projectedTarget, projectedGripper;
+            myVectorPlaneProjection(&relativeToCurrentJointTargetPosition, &rotationAxis, &projectedTarget);
+            myVectorPlaneProjection(&relativeToCurrentJointGripperPosition, &rotationAxis, &projectedGripper);
+            myVectorNormalization(&projectedTarget); 
+            myVectorNormalization(&projectedGripper);
+
+            double cosTeta = myVectorDotProduct(&projectedTarget,&projectedGripper);
+            cosTeta = fmax(-1.0, fmin(1.0, cosTeta));
+            double teta = acos(cosTeta);
+
+            Vector3D crossHelperVector;
+            myVectorCrossProduct(&projectedTarget, &projectedGripper, &crossHelperVector);
+            double crossHelperDir = myVectorDotProduct(&crossHelperVector, &rotationAxis);
+            if(crossHelperDir < 0) {teta = -teta;}
+
+            thetas[i] += teta;
+            forwardKinematics(ramie, thetas, fkResults);
+            currentEndEffectorPosition.x = fkResults[5].data[3];
+            currentEndEffectorPosition.y = fkResults[5].data[7];
+            currentEndEffectorPosition.z = fkResults[5].data[11];
         }
     }
 }

@@ -113,7 +113,7 @@ void myVectorNormalization(Vector3D* v)
     }   
 }
 
-void myVectorProjectOnPlane(const Vector3D* v, const Vector3D* n, Vector3D* vout)
+void myVectorPlaneProjection(const Vector3D* v, const Vector3D* n, Vector3D* vout)
 {
     // wedlug wzoru na rzutowanie ortogonalne
     // (oryginalny wektor v minus część wzdłuż osi normalnej)
