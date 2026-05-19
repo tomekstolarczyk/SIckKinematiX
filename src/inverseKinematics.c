@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "inverseKinematicsCCD.h"
+#include "inverseKinematics.h"
 
 void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* target)
 {

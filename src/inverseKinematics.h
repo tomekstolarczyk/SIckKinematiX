@@ -1,7 +1,7 @@
 #include "forwardKinematics.h"
 
-#ifndef inverseKinematicsCCD_h
-#define inverseKinematicsCCD_h
+#ifndef inverseKinematics
+#define inverseKinematics
 
 void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* target);
 
