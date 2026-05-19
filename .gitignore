@@ -1,7 +1,10 @@
+# Moje
 .vscode
 venv
 *.egg-info/
 sickkinematix/__pycache__/
+
+# Boilerplate z githuba dla projektow w c ----------------------------------------------------------------------------------------------------
 
 # Prerequisites
 *.d
