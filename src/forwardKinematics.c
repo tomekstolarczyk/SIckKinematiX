@@ -43,7 +43,7 @@ void createMDHTransformMatrix(double a, double alpha, double d, double theta, Ma
     result -> data[15] = 1;
 }
 
-void forwardKinematics(RobotArm6DoF* robotArm, const double* thetas, Matrix44* results)
+void forwardKinematics(const RobotArm6DoF* robotArm, const double* thetas, Matrix44* results)
 {
 
     //tworzymy macierz jednostkowa zeby od czegos zaczac obliczenia 
