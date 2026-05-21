@@ -15,7 +15,6 @@ static PyObject* forwardKin(PyObject* self, PyObject* args)
         return NULL;
 
     // 2. liczymy w c
-    
     double l1 = 0.6, l2 = 0.5, l3 = 0.4, l4 = 0.3, l5 = 0.2, l6 = 0.1;
     RobotArm6DoF ramie = {
         {0, 0, -l3, -l5, 0, 0},
@@ -29,13 +28,24 @@ static PyObject* forwardKin(PyObject* self, PyObject* args)
 
     forwardKinematics(&ramie, tetas, results); 
 
-    // 3. pakujemy calosc spowrotem do pythona
+    // 3. pakujemy wyniki spowrotem do pythona
 
-    double x = results[5].data[3];
-    double y = results[5].data[7];
-    double z = results[5].data[11];
+    PyObject* lista = PyList_New(7);
 
-    return Py_BuildValue("ddd", x, y, z);
+    PyObject* baza = Py_BuildValue("ddd", 0.0, 0.0, 0.0);
+    PyList_SetItem(lista, 0, baza);
+
+    for(size_t i = 0; i<6; i++)
+    {
+        double x = results[i].data[3];
+        double y = results[i].data[7];
+        double z = results[i].data[11];
+        PyObject* wektor = Py_BuildValue("ddd", x, y, z);
+
+        PyList_SetItem(lista, i+1, wektor);
+    }
+
+    return lista;
 }
 
 // teraz dla kinematyki odwrotnej ccd
