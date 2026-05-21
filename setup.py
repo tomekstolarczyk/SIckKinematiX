@@ -3,9 +3,10 @@ import setuptools
 module = setuptools.Extension(
     "sickkinematix.c_kinematix", 
     sources=[
-        "src/wrapper.c",
+        "src/pythonWrapper.c",
         "src/pureMath.c",
-        "src/forwardKinematics.c"
+        "src/forwardKinematics.c",
+        "src/inverseKinematics.c"
     ]
 )
 
