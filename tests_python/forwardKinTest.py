@@ -7,3 +7,4 @@ print(f"Otrzymana pozycja końcówki (X, Y, Z):")
 print(f"X: {wynik[0]:.4f}")
 print(f"Y: {wynik[1]:.4f}")
 print(f"Z: {wynik[2]:.4f}")
+

@@ -5,7 +5,7 @@
 void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* target)
 {
     Matrix44 fkResults[6];
-    int max_iters = 100;
+    int max_iters = 5000;
     double tolerance = 0.001;
 
     // 1. iteracje zewnetrzne 

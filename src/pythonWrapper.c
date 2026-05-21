@@ -15,12 +15,12 @@ static PyObject* forwardKin(PyObject* self, PyObject* args)
         return NULL;
 
     // 2. liczymy w c
-    double l1 = 0.6, l2 = 0.5, l3 = 0.4, l4 = 0.3, l5 = 0.2, l6 = 0.1;
-    RobotArm6DoF ramie = {
-        {0, 0, -l3, -l5, 0, 0},
-        {0, M_PI/2.0, 0, 0, -M_PI/2.0, M_PI/2.0},
-        {l1, 0, 0, l6, 0, 0},
-        {M_PI/2.0, -M_PI/2.0, 0, M_PI/2.0, 0, M_PI/2.0}
+    RobotArm6DoF ramie = 
+    {
+        {0.0, 0.4, 0.3, 0.0, 0.0, 0.0},                  // a (Długości ramion X)
+        {M_PI/2.0, 0.0, 0.0, M_PI/2.0, -M_PI/2.0, 0.0},  // alpha (Skręcenia)
+        {0.3, 0.0, 0.0, 0.3, 0.1, 0.1},                  // d (Przesunięcia Z)
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}                   // offsets (Kąty startowe)
     };
 
     double tetas[] = {t1,t2,t3,t4,t5,t6};
@@ -53,20 +53,23 @@ static PyObject* forwardKin(PyObject* self, PyObject* args)
 static PyObject* inverseKin(PyObject* self, PyObject* args)
 {
     // 1. rozpakowanie 
-    double tx, ty, tz;
-    if (!PyArg_ParseTuple(args, "ddd", &tx, &ty, &tz))
+    // "ddd|dddddd" -> target + katy startowe (opcjonalnie)
+    double tx, ty, tz, t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0, t6 = 0.0;
+    if (!PyArg_ParseTuple(args, "ddd|dddddd", &tx, &ty, &tz, &t1, &t2, &t3, &t4, &t5, &t6))
         return NULL;
     
     // 2. przeliczamy, start z pozycji zerowej
     Vector3D target = {tx, ty, tz};
-    double l1 = 0.6, l2 = 0.5, l3 = 0.4, l4 = 0.3, l5 = 0.2, l6 = 0.1;
-    RobotArm6DoF ramie = {
-        {0, 0, -l3, -l5, 0, 0},
-        {0, M_PI/2.0, 0, 0, -M_PI/2.0, M_PI/2.0},
-        {l1, 0, 0, l6, 0, 0},
-        {M_PI/2.0, -M_PI/2.0, 0, M_PI/2.0, 0, M_PI/2.0}
+
+    RobotArm6DoF ramie = 
+    {
+        {0.0, 0.4, 0.3, 0.0, 0.0, 0.0},                  // a (Długości ramion X)
+        {M_PI/2.0, 0.0, 0.0, M_PI/2.0, -M_PI/2.0, 0.0},  // alpha (Skręcenia)
+        {0.3, 0.0, 0.0, 0.3, 0.1, 0.1},                  // d (Przesunięcia Z)
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}                   // offsets (Kąty startowe)
     };
-    double thetas[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+
+    double thetas[] = {t1, t2, t3, t4, t5, t6};
     inverseKinematicsCCD(&ramie, thetas, &target);
 
     // 3. pakujemy
