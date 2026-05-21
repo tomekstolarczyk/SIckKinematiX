@@ -1,9 +1,10 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-
-#include "forwardKinematics.h"
 #include "pureMath.h"
+#include "forwardKinematics.h"
+
+// laczymy kinematyke prosta z c z pythonem
 
 static PyObject* forwardKin(PyObject *self, PyObject *args)
 {
@@ -36,7 +37,7 @@ static PyObject* forwardKin(PyObject *self, PyObject *args)
     return Py_BuildValue("ddd", x, y, z);
 }
 
-// ponizej czysty boilerplate-mapowanie do pythona
+// ponizej tylko boilerplate-mapowanie do pythona
 
 static PyMethodDef SickMethods[] = {
     {"fk", forwardKin, METH_VARARGS, "Liczy Kinematyke Prosta (FK) dla 6 katow."},

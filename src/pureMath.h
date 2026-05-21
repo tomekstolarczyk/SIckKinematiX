@@ -1,3 +1,5 @@
+#include <math.h>
+
 #ifndef pureMath_h
 #define pureMath_h
 

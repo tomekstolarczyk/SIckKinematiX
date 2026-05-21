@@ -20,7 +20,6 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
         myVectorSub(&currentEndEffectorPosition, target, &distanceVector);
         if(myVectorLength(&distanceVector)<=tolerance)
         {
-            printf("made it in %d", iter);
             break;
         }
 
@@ -47,7 +46,7 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
             double teta = acos(cosTeta);
 
             Vector3D crossHelperVector;
-            myVectorCrossProduct(&projectedTarget, &projectedGripper, &crossHelperVector);
+            myVectorCrossProduct(&projectedGripper, &projectedTarget, &crossHelperVector);
             double crossHelperDir = myVectorDotProduct(&crossHelperVector, &rotationAxis);
             if(crossHelperDir < 0) {teta = -teta;}
 
