@@ -3,7 +3,7 @@
 venv
 *.egg-info/
 sickkinematix/__pycache__/
-wizuale.html
+tests_python/wizuale.html
 
 
 # Boilerplate z githuba dla projektow w c ----------------------------------------------------------------------------------------------------
