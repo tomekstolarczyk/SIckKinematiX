@@ -9,7 +9,6 @@ RobotArm6DoF ramie = {
     {M_PI/2.0, -M_PI/2.0, 0, M_PI/2.0, 0, M_PI/2.0}
 };
 
-
 int main(void)
 {
     Matrix44 results[6];

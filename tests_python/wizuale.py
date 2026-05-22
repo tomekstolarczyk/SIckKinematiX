@@ -3,11 +3,12 @@ import plotly.graph_objects as go
 import sickkinematix  
 
 # 1. generujemy trajektorie (kolo) ----------------------------------------------------
+
 trajektoria = []
-R = 0.1
-X_Srodka = 0.2 
-Y_Srodka = 0.0
-Z_Srodka = 0.1  
+R = 0.4
+X_Srodka = 0.8
+Y_Srodka = 0.8
+Z_Srodka = 0.2
 liczba_punktow_na_kole = 80
 
 for i in range(liczba_punktow_na_kole):
@@ -16,20 +17,46 @@ for i in range(liczba_punktow_na_kole):
 
     x = X_Srodka + R * math.cos(kat)
     y = Y_Srodka + R * math.sin(kat)
-    trajektoria.append((x, y, Z_Srodka))
+    trajektoria.append((x, y, Z_Srodka)) # lista naszych targetow
 
 # 2. liczymy w c -----------------------------------------------------------
 
 RobotAnimFrames = []
-aktualne_katy = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+aktualne_katy = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0) # pozycja startowa
 
-for punkt in trajektoria:
-    aktualne_katy = sickkinematix.ik_ccd(punkt[0], punkt[1], punkt[2], *aktualne_katy) 
+for punkt in trajektoria: 
+    # 1. Wywołanie IK
+    nowe_katy = sickkinematix.ik_ccd(punkt[0], punkt[1], punkt[2], *aktualne_katy)
+    
+    # 2. BEZPIECZNIK: Czy kąty nie są "z kosmosu"? (np. > 10 radianów = ~570 stopni)
+    # Jeśli są podejrzane, resetujemy do pozycji zerowej
+    if any(abs(k) > 10.0 for k in nowe_katy):
+        print(f"!!! OSTRZEŻENIE: Wykryto eksplozję kątów w punkcie {punkt}. Resetuję stan.")
+        aktualne_katy = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+    else:
+        aktualne_katy = nowe_katy
+
+    # 3. Przelicz FK
     fkResults = sickkinematix.fk(*aktualne_katy) 
-    RobotAnimFrames.append(fkResults)
+    
+    # 4. Oblicz błąd (używamy indeksu 6 - końcówka)
+    end_effector = fkResults[6]
+    ex = punkt[0] - end_effector[0]
+    ey = punkt[1] - end_effector[1]
+    ez = punkt[2] - end_effector[2]
+    blad = math.sqrt(ex**2 + ey**2 + ez**2)
+    
+    sukces = "SUKCES" if (blad < 0.05) else ":("
+    
+    # Poprawiony print: pokazujemy cel, pozycję końcówki (indeks 6) i błąd
+    print(f"Target: {punkt} | EE: ({end_effector[0]:.2f}, {end_effector[1]:.2f}, {end_effector[2]:.2f}) | Błąd: {blad:.4f} | {sukces}")
+
+    
 
 
 # 3. RYSOWANIE I ANIMACJA ------------------------------------------------------------
+
+"""
 
 fig = go.Figure()
 
@@ -92,3 +119,6 @@ fig.update_layout(
 
 pliky = "tests_python/wizuale.html"
 fig.write_html(pliky)
+
+"""
+

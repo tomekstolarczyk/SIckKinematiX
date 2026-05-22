@@ -4,6 +4,14 @@
 #include "pureMath.h"
 #include "forwardKinematics.h"
 #include "inverseKinematics.h"
+#include "../src/forwardKinematics.h"
+
+RobotArm6DoF ramie = {
+    {0, 0, -0.4, -0.2, 0, 0}, // Podstaw te same wartości co w tests_c/ramieRobota.h
+    {0, M_PI/2.0, 0, 0, -M_PI/2.0, M_PI/2.0},
+    {0.6, 0, 0, 0.1, 0, 0},
+    {M_PI/2.0, -M_PI/2.0, 0, M_PI/2.0, 0, M_PI/2.0}
+};
 
 // laczymy kinematyke prosta z c z pythonem
 
@@ -15,13 +23,6 @@ static PyObject* forwardKin(PyObject* self, PyObject* args)
         return NULL;
 
     // 2. liczymy w c
-    RobotArm6DoF ramie = 
-    {
-        {0.0, 0.4, 0.3, 0.0, 0.0, 0.0},                  // a (Długości ramion X)
-        {M_PI/2.0, 0.0, 0.0, M_PI/2.0, -M_PI/2.0, 0.0},  // alpha (Skręcenia)
-        {0.3, 0.0, 0.0, 0.3, 0.1, 0.1},                  // d (Przesunięcia Z)
-        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}                   // offsets (Kąty startowe)
-    };
 
     double tetas[] = {t1,t2,t3,t4,t5,t6};
     Matrix44 results[6];
@@ -61,14 +62,6 @@ static PyObject* inverseKin(PyObject* self, PyObject* args)
     // 2. przeliczamy, start z pozycji zerowej
     Vector3D target = {tx, ty, tz};
 
-    RobotArm6DoF ramie = 
-    {
-        {0.0, 0.4, 0.3, 0.0, 0.0, 0.0},                  // a (Długości ramion X)
-        {M_PI/2.0, 0.0, 0.0, M_PI/2.0, -M_PI/2.0, 0.0},  // alpha (Skręcenia)
-        {0.3, 0.0, 0.0, 0.3, 0.1, 0.1},                  // d (Przesunięcia Z)
-        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}                   // offsets (Kąty startowe)
-    };
-
     double thetas[] = {t1, t2, t3, t4, t5, t6};
     inverseKinematicsCCD(&ramie, thetas, &target);
 
@@ -77,7 +70,7 @@ static PyObject* inverseKin(PyObject* self, PyObject* args)
     , thetas[3], thetas[4], thetas[5]);
 }
 
-// ponizej tylko boilerplate-mapowanie do pythona
+// ponizej tylko boilerplate-mapowanie do pythona --------------------------------------------------------------------------------
 
 static PyMethodDef SickMethods[] = {
     {"fk", forwardKin, METH_VARARGS, "Liczy Kinematyke Prosta (FK) dla 6 katow."},
