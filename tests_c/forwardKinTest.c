@@ -1,7 +1,14 @@
 #include <stdio.h>
 
 #include "../src/forwardKinematics.h"
-#include "ramieRobota.h"
+
+RobotArm6DoF ramie = {
+    {0, 0, -0.4, -0.2, 0, 0}, 
+    {0, M_PI/2.0, 0, 0, -M_PI/2.0, M_PI/2.0},
+    {0.6, 0, 0, 0.1, 0, 0},
+    {M_PI/2.0, -M_PI/2.0, 0, M_PI/2.0, 0, M_PI/2.0}
+};
+
 
 int main(void)
 {

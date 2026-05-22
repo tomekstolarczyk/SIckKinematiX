@@ -1,7 +1,13 @@
 #include <stdio.h>
 
 #include "../src/inverseKinematics.h"
-#include "ramieRobota.h"
+
+RobotArm6DoF ramie = {
+    {0, 0, -0.4, -0.2, 0, 0}, 
+    {0, M_PI/2.0, 0, 0, -M_PI/2.0, M_PI/2.0},
+    {0.6, 0, 0, 0.1, 0, 0},
+    {M_PI/2.0, -M_PI/2.0, 0, M_PI/2.0, 0, M_PI/2.0}
+};
 
 int main(void)
 {
@@ -9,8 +15,7 @@ int main(void)
     Matrix44 fkResults[6];
     forwardKinematics(&ramie, thetas_target, fkResults);
 
-    Vector3D target = 
-    {
+    Vector3D target = {
         fkResults[5].data[3],
         fkResults[5].data[7],
         fkResults[5].data[11]
@@ -24,8 +29,7 @@ int main(void)
 
     // wyniki ccd 
     forwardKinematics(&ramie, thetas_test, fkResults);
-    Vector3D achieved = 
-    {
+    Vector3D achieved = {
         fkResults[5].data[3],
         fkResults[5].data[7],
         fkResults[5].data[11]
