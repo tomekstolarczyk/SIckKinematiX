@@ -1,12 +1,12 @@
-# Moje
+# mine ----------------------------------------------------------------
+
 .vscode
 venv
 *.egg-info/
 sickkinematix/__pycache__/
 tests_python/wizuale.html
 
-
-# Boilerplate z githuba dla projektow w c ----------------------------------------------------------------------------------------------------
+# github boilerplate (projects in c) ----------------------------------------------------------------------------------------------------
 
 # Prerequisites
 *.d
