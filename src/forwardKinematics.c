@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <math.h>
-
 #include "forwardKinematics.h"
 
 void createMDHTransformMatrix(double a, double alpha, double d, double theta, Matrix44* result)

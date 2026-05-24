@@ -7,7 +7,7 @@
     #define M_PI 3.14159265358979323846
 #endif
 
-// 4x4 MATRIX MATH -------------------------------------------
+// 4x4 MATRIX MATH (needed for forward kinematics using the MDH matricies) -------------------------------------------
 
 typedef struct {
     double data[16];
@@ -17,7 +17,7 @@ void create4x4IdentityMatrix(Matrix44* M);
 void printMatrix44(const Matrix44* M); 
 void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result);
 
-// 3d VECTOR MATH--------------------------------------------
+// 3d VECTOR MATH (needed for the CCD algorithm) --------------------------------------------
 
 typedef struct{
     double x;
