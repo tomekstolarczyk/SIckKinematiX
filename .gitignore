@@ -5,6 +5,7 @@ venv
 *.egg-info/
 sickkinematix/__pycache__/
 tests_python/wizuale.html
+tests_python/wizu.py
 
 # github boilerplate (projects in c) ----------------------------------------------------------------------------------------------------
 

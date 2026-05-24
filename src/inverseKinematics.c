@@ -24,7 +24,7 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
         }
 
         // 2. jesli cel nietrafiony to petla wewnetrzna po stawach od konca do bazy
-        for(int i = 4 ; i>=0; i--)
+        for(int i = 5 ; i>=0; i--)
         {
             Vector3D currentJointPosition = {fkResults[i].data[3], fkResults[i].data[7], fkResults[i].data[11]};
 
@@ -38,6 +38,13 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
             Vector3D projectedTarget, projectedGripper;
             myVectorPlaneProjection(&relativeToCurrentJointTargetPosition, &rotationAxis, &projectedTarget);
             myVectorPlaneProjection(&relativeToCurrentJointGripperPosition, &rotationAxis, &projectedGripper);
+            
+            // zabezpieczamy sie przed sytuacja gdzie target lezy na osi obrotu 
+            double projectedTargetPosLen = myVectorLength(&projectedTarget);
+            double projectedGripperPosLen = myVectorLength(&projectedGripper);
+            if(projectedTargetPosLen < 1e-7 || projectedGripperPosLen < 1e-7)
+            {continue;}
+            
             myVectorNormalization(&projectedTarget); 
             myVectorNormalization(&projectedGripper);
 
@@ -51,6 +58,8 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
             if(crossHelperDir < 0) {teta = -teta;}
 
             thetas[i] += teta;
+            thetas[i] = atan2(sin(thetas[i]), cos(thetas[i])); // angle normalization
+
             forwardKinematics(ramie, thetas, fkResults);
             currentEndEffectorPosition.x = fkResults[5].data[3];
             currentEndEffectorPosition.y = fkResults[5].data[7];
