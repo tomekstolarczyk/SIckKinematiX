@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 #include "../src/inverseKinematics.h"
 
 // Prawdziwe parametry Modified DH (Craig) dla robota UR5

@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h> // do mierzenia czasu
 #include "../src/workspaceAnalysis.h"
+
 
 RobotArm6DoF ramie = {
     // a - przesunięcia wzdłuż osi X (długości głównych kości)
@@ -14,13 +17,29 @@ RobotArm6DoF ramie = {
 
 int main(void)
 {
-    size_t points = 5000;
-    double x[points], y[points], z[points];
+    size_t points = 1000000;
 
+    double* x = malloc(sizeof(double)*points);
+    double* y = malloc(sizeof(double)*points);
+    double* z = malloc(sizeof(double)*points);
+    if(x == NULL || y == NULL || z == NULL) {return 1;}
+
+    clock_t start = clock();
     workspaceAnalysis(&ramie, points, x, y, z);
+    clock_t end = clock();
 
-    for(size_t i = 0; i <points; i++)
+    double timee = (double) (end - start) / CLOCKS_PER_SEC;
+
+    for(size_t i = 0; i <10; i++)
     {
         printf("point %zu : (%f, %f, %f)\n", i, x[i], y[i], z[i]);
     }
+
+    printf("time spent: %f\n", timee);
+
+    free(x);
+    free(y);
+    free(z);
+    
+    return 0;
 }
