@@ -20,7 +20,7 @@ RobotArm6DoF ramie = {
 
 // laczymy kinematyke prosta z c z pythonem
 
-static PyObject* forwardKin(PyObject* self, PyObject* args)
+static PyObject* forwardKinWrapped(PyObject* self, PyObject* args)
 {
     // 1. ROZPAKOWANIE z Pyhona
     double t1, t2, t3, t4, t5, t6;
@@ -56,7 +56,7 @@ static PyObject* forwardKin(PyObject* self, PyObject* args)
 
 // teraz dla kinematyki odwrotnej ccd
 
-static PyObject* inverseKin(PyObject* self, PyObject* args)
+static PyObject* inverseKinCCDWrapped(PyObject* self, PyObject* args)
 {
     // 1. rozpakowanie 
     // "ddd|dddddd" -> target + katy startowe (opcjonalnie)
@@ -75,11 +75,18 @@ static PyObject* inverseKin(PyObject* self, PyObject* args)
     , thetas[3], thetas[4], thetas[5]);
 }
 
+static PyObject* workspaceAnalyzerWrapped()
+{
+    // todo
+}
+
+
+
 // ponizej tylko boilerplate-mapowanie do pythona --------------------------------------------------------------------------------
 
 static PyMethodDef SickMethods[] = {
-    {"fk", forwardKin, METH_VARARGS, "Liczy Kinematyke Prosta (FK) dla 6 katow."},
-    {"ik_ccd", inverseKin, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK CCD) do celu X, Y, Z."},
+    {"fk", forwardKinWrapped, METH_VARARGS, "Liczy Kinematyke Prosta (FK) dla 6 katow."},
+    {"ik_ccd", inverseKinCCDWrapped, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK CCD) do celu X, Y, Z."},
     {NULL, NULL, 0, NULL} 
 };
 
