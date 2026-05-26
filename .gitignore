@@ -6,6 +6,7 @@ venv
 sickkinematix/__pycache__/
 tests_python/wizuale.html
 tests_python/wizu.py
+tests_python/wizu2.py
 
 # github boilerplate (projects in c) ----------------------------------------------------------------------------------------------------
 

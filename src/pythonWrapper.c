@@ -105,8 +105,12 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
     double* y_data = (double*) PyArray_DATA((PyArrayObject*) y_array);
     double* z_data = (double*) PyArray_DATA((PyArrayObject*) z_array);
 
+    // printf("--> [C DEBUG] Tablice NumPy utworzone, wchodze do workspaceAnalysis...\n");
+
     // nasz agorytm wypelnia zadane tablice danymi
-    workspaceAnalysis(&ramie, pointsNumber, x_array, y_array, z_array);
+    workspaceAnalysis(&ramie, pointsNumber, x_data, y_data, z_data);
+
+    // printf("--> [C DEBUG] Wróciłem z workspaceAnalysis. Pakuje do Pythona...\n");
 
     // pakujemy to i odslyamy wskaznik na to do pythona
     return Py_BuildValue("NNN", x_array, y_array, z_array);
