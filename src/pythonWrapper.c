@@ -1,10 +1,14 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#include "pureMath.h"
-#include "forwardKinematics.h"
 #include "inverseKinematics.h"
-#include "../src/forwardKinematics.h"
+#include "workspaceAnalysis.h"
+
+// numpy c api
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION // to avoid warnings about possible use of old API
+#define PY_ARRAY_UNIQUE_SYMBOL SICK_KINEMATIX_API // dla kompilatora - zapobiegamy konfliktowi nazw
+#include "numpy/ndarrayobject.h"
+
 
 // Prawdziwe parametry Modified DH (Craig) dla robota UR5
 RobotArm6DoF ramie = {
@@ -18,8 +22,7 @@ RobotArm6DoF ramie = {
     {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
 };
 
-// laczymy kinematyke prosta z c z pythonem
-
+// pakujemy kinematyke prosta
 static PyObject* forwardKinWrapped(PyObject* self, PyObject* args)
 {
     // 1. ROZPAKOWANIE z Pyhona
@@ -54,8 +57,7 @@ static PyObject* forwardKinWrapped(PyObject* self, PyObject* args)
     return lista;
 }
 
-// teraz dla kinematyki odwrotnej ccd
-
+// pakujemy kinematyke odwrotna
 static PyObject* inverseKinCCDWrapped(PyObject* self, PyObject* args)
 {
     // 1. rozpakowanie 
@@ -75,18 +77,50 @@ static PyObject* inverseKinCCDWrapped(PyObject* self, PyObject* args)
     , thetas[3], thetas[4], thetas[5]);
 }
 
-static PyObject* workspaceAnalyzerWrapped()
+// pakujemy workspace analysis
+static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
 {
-    // todo
+    // wypakowujemy
+    npy_intp pointsNumber;
+    if (!PyArg_ParseTuple(args, "n", &pointsNumber))
+        return NULL;
+    
+    // wymiar tablicy - dla numpy
+    npy_intp dims[] = {pointsNumber};
+
+    // z poziomu c tworzymy numpyowe obiekty 
+    PyObject* x_array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+    PyObject* y_array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+    PyObject* z_array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+
+    // jesli ktoras z tablic niepoprawnie sie zainicjalizuje to czyscimy
+    if(!x_array || !y_array || !z_array)
+    {
+        Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array);
+        return NULL;
+    }
+
+    // teraz wyciagamy z tych obiektow wskazniki na tablice danych
+    double* x_data = (double*) PyArray_DATA((PyArrayObject*) x_array);
+    double* y_data = (double*) PyArray_DATA((PyArrayObject*) y_array);
+    double* z_data = (double*) PyArray_DATA((PyArrayObject*) z_array);
+
+    // nasz agorytm wypelnia zadane tablice danymi
+    workspaceAnalysis(&ramie, pointsNumber, x_array, y_array, z_array);
+
+    // pakujemy to i odslyamy wskaznik na to do pythona
+    return Py_BuildValue("NNN", x_array, y_array, z_array);
+    // N nie O bo nie chcemy zwiekszac licznika referencji
+    // kiedy wywolalismy PyArray_SimpleNew, NumPy stworzylo obiekt i od razu ustawilo jego licznik na 1
+    // nie ma co go zwiekszac juz
 }
-
-
 
 // ponizej tylko boilerplate-mapowanie do pythona --------------------------------------------------------------------------------
 
 static PyMethodDef SickMethods[] = {
     {"fk", forwardKinWrapped, METH_VARARGS, "Liczy Kinematyke Prosta (FK) dla 6 katow."},
     {"ik_ccd", inverseKinCCDWrapped, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK CCD) do celu X, Y, Z."},
+    {"workspace", workspaceAnalyzerWrapped, METH_VARARGS, "Generuje chmure punktow przestrzeni roboczej"},
     {NULL, NULL, 0, NULL} 
 };
 
@@ -99,6 +133,7 @@ static struct PyModuleDef sickmodule = {
 };
 
 PyMODINIT_FUNC PyInit_c_kinematix(void) {
+    import_array();
     PyObject* m = PyModule_Create(&sickmodule); // Stwórz moduł i przypisz do 'm'
     if (!m) {return NULL;}
     return m;

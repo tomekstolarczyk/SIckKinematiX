@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "numpy>=2.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,8 +7,8 @@ name = "sickkinematix"
 version = "0.0.1"
 description = "SICK Kinematics solver in pure C"
 authors = [
-    { name="Twoje Imie", email="twoj@email.com" },
+    { name="Tomek Stolarczyk", email="tomasz.d.stolarczyk@gmail.com" },
 ]
 license = "MIT"
 requires-python = ">=3.10"
-# dependencies = ["numpy>=2.0.0"] # Odkomentujemy to później, jak dodamy NumPy!
+dependencies = ["numpy>=2.0.0"] # Odkomentujemy to później, jak dodamy NumPy!
