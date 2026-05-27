@@ -1,8 +1,7 @@
 #include "pureMath.h"
 
-#ifndef buildRobotArm_h
-#define buildRobotArm_h
-
+#ifndef buildRobot_h
+#define buildRobot_h
 typedef struct {
     double a[6];
     double alpha[6];
