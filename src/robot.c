@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "buildRobot.h"
+#include "robot.h"
 
 void createMDHTransformMatrix(double a, double alpha, double d, double theta, Matrix44* result)
 {

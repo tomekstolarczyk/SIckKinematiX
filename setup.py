@@ -5,7 +5,7 @@ module = setuptools.Extension(
     "sickkinematix.c_kinematix", 
     sources=[
         "src/pythonWrapper.c",
-        "src/buildRobot.c",
+        "src/robot.c",
         "src/pureMath.c",
         "src/forwardKinematics.c",
         "src/inverseKinematics.c",
