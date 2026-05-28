@@ -37,4 +37,13 @@ void myVectorCrossProduct(const Vector3D* v1, const Vector3D* v2, Vector3D* vout
 void myVectorNormalization(Vector3D* v);
 void myVectorPlaneProjection(const Vector3D* v, const Vector3D* n, Vector3D* vout);
 
+// 6x6 MATRIX MATH (for Jacobian math - workspace analysis and Inverse Kinematics DLL) -------------------------------------------
+
+typedef struct {
+    double data[36];
+} Matrix66;
+
+void printMatrix66(const Matrix66* M); 
+
 #endif
+
