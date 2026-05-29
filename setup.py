@@ -6,7 +6,7 @@ module = setuptools.Extension(
     sources=[
         "src/pythonWrapper.c",
         "src/robot.c",
-        "src/pureMath.c",
+        "src/justMath.c",
         "src/forwardKinematics.c",
         "src/inverseKinematics.c",
         "src/workspaceAnalysis.c"
