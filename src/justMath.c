@@ -178,3 +178,89 @@ void transpose6x6Matrix(const Matrix66* M, Matrix66* result)
 
     *result = temp;
 }
+
+int gaussJordan66MatrixInversion(const Matrix66* M, Matrix66* result)
+{
+    // finding inverse of a matrix using gauss-jordan method with partial pivoting for numerical precision
+
+    // 1. build the augmented matrix
+    double AI[72] = {0};
+    int indexJedynki = 0;
+
+    for(size_t r = 0; r<6;r++) // rows
+    {
+        for (size_t c = 0; c<6;c++) // A 
+        {       
+            AI[r*12+c] = M->data[r*6+c];
+        }
+        
+        AI[r*12+6+indexJedynki] = 1;
+        indexJedynki += 1;
+    }
+
+    // 2. the actualy algorithm - turn A into I
+    for(size_t c = 0; c<6; c++) // for each column
+    {
+        // 3. partial pivoting
+        double pivot = fabs(AI[c*12+c]); // default choice
+        size_t pivotOldRow = c;
+
+        for(size_t r = c+1; r < 6; r++) // start with r=c+1 or else we'll destroy previous steps
+        {
+            if(pivot < fabs(AI[r*12+c])) 
+            {
+                pivot = fabs(AI[r*12+c]);
+                pivotOldRow = r;
+            }
+        }
+
+        // 4. place pivot in the right place if needed - exchange rows
+        if(pivotOldRow != c)
+        {
+            for(size_t i = 0; i<12; i++)
+            {
+                double temp = AI[c*12+i];
+                AI[c*12+i] = AI[pivotOldRow*12+i];
+                AI[pivotOldRow*12+i] = temp;
+            }
+        }
+
+        // pivot standing on (c,c) now as desired
+
+        // watch out for singularities
+        if(pivot < 1e-7) {return 0;}
+
+        // 5. scale pivot to 1 - divide the entire row by it
+        if(pivot != 1.0) 
+        {
+            double div = AI[c*12+c];
+            for(size_t i = 0; i<12; i++)
+            {
+                AI[c*12+i] = (double)AI[c*12+i]/div; // nie przez pivot bo pivot jest |abs|
+            }
+        }
+
+        // 6. elimation at last - zero everything except from the pivot
+        for(size_t r = 0; r < 6; r++)
+        {
+            if(r==c) {continue;} // skip pivot row
+            double factor = AI[r*12+c];
+            for(size_t i = 0; i <12; i++) // substraction operation on the entire row
+            {  
+                // nowy wiersz = stary wiersz - (factor * wiersz pivota)
+                AI[r*12+i] -= factor*AI[c*12+i];
+            }
+        }
+    }
+
+    // find A^(-1)
+    for(size_t r = 0; r<6; r++)
+    {
+        for (size_t c = 0; c<6; c++)
+        {
+            result->data[6*r+c] = AI[12*r+(6+c)];
+        }
+    }
+
+    return 1;
+}
