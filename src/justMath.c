@@ -31,7 +31,7 @@ void printMatrix44(const Matrix44* M)
 
 }
 
-void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result)
+void multiply4x4Matrix(const Matrix44* M1, const Matrix44* M2, Matrix44* result)
 {
     /*
     Wzorek poglądowy 
@@ -50,13 +50,14 @@ void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result)
     Matrix44 temp = {0};
     // empty - initalized ^ 
     
-    for(size_t r = 0; r < 4; r++) // dla kazdego wiersza macierzy A
+    for(size_t r = 0; r < 4; r++) // wiersz
     {
-        for(size_t c = 0; c < 4; c++) // wymnazamy go przez kolumny macierzy B
+        for(size_t el = 0; el < 4; el++) // element
         {
-            for(size_t el = 0; el < 4; el++) //iloczyn skalarny wiersz x kolumna
+            double leftMatrixEl = M1->data[4*r+el];
+            for(size_t c = 0; c < 4; c++) // kolumna
             {
-                (temp.data[r*4+c]) += ((M1->data[4*r+el])*(M2->data[c+el*4]));
+                (temp.data[r*4+c]) += ((leftMatrixEl)*(M2->data[c+el*4]));
             }
         }
     }
@@ -142,4 +143,38 @@ void printMatrix66(const Matrix66* M)
             M->data[r*6+5]);
     }
     printf("----------------------------------------------------------------------------------\n");
+}
+
+void multiply6x6Matrix(const Matrix66* M1, const Matrix66* M2, Matrix66* result)
+{
+    Matrix66 temp = {0};
+
+    for(size_t r=0;r<6;r++) // rows
+    {
+        for(size_t i = 0; i<6;i++) // elements
+        {
+            double leftMatrixValue = M1->data[r*6+i]; // constant in deepest part of the loop
+
+            for(size_t c = 0; c<6; c++) // columns
+            {
+                temp.data[r*6+c] += leftMatrixValue*M2->data[i*6+c];
+            }
+        }
+    }
+    *result = temp;
+}
+
+void transpose6x6Matrix(const Matrix66* M, Matrix66* result)
+{
+    Matrix66 temp = {0};
+
+    for(size_t i =0; i<6; i++)
+    {
+        for(size_t j = 0 ; j<6 ; j++)
+        {
+            temp.data[i*6+j] = M->data[j*6+i];
+        }
+    }
+
+    *result = temp;
 }

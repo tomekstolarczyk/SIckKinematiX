@@ -11,7 +11,7 @@ module = setuptools.Extension(
         "src/inverseKinematics.c",
         "src/workspaceAnalysis.c"
     ],
-    include_dirs=[numpy.get_include()] # bez tego C nie znajdzie ndarrayobject.h
+    include_dirs=[numpy.get_include()] 
 )
 
 setuptools.setup(

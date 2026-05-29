@@ -15,7 +15,7 @@ typedef struct {
 
 void create4x4IdentityMatrix(Matrix44* M);
 void printMatrix44(const Matrix44* M); 
-void multiply4x4Matrix(Matrix44* M1, Matrix44* M2, Matrix44* result);
+void multiply4x4Matrix(const Matrix44* M1, const Matrix44* M2, Matrix44* result);
 
 // 3d VECTOR MATH (needed for the CCD algorithm) --------------------------------------------
 
@@ -44,6 +44,9 @@ typedef struct {
 } Matrix66;
 
 void printMatrix66(const Matrix66* M); 
+void multiply6x6Matrix(const Matrix66* M1, const Matrix66* M2, Matrix66* result);
+void transpose6x6Matrix(const Matrix66* M, Matrix66* result);
+void invert66Matrix(const Matrix66* M, Matrix66* result);
 
 #endif
 
