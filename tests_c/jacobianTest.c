@@ -15,14 +15,32 @@ int main(void)
     };
 
     double thetas[] = {0.5, 0.3, -0.4, 0.8, 1.2, -0.2};
+
+    // build jacobian
     Matrix66 jacobian;
-
     calculateJacobian(&ramie, thetas, &jacobian);
-
     printMatrix66(&jacobian);
 
-    return 0;
+    // transposed jacobian
+    Matrix66 transposed;
+    transpose6x6Matrix(&jacobian, &transposed);
 
+    Matrix66 inverted;
+    int status = gaussJordan66MatrixInversion(&jacobian, &inverted);
+
+    if (status == 1) {
+        printf("Sukces! Macierz odwrocona.\n");
+        printMatrix66(&inverted); 
+
+        printf("check A*A^(-1)=?:\n");
+        Matrix66 identityCheck;
+        multiply6x6Matrix(&jacobian, &inverted, &identityCheck);
+        printMatrix66(&identityCheck);
+    } 
+    else 
+    {
+        printf("BLAD: Macierz osobliwa\n");
+    }
 }
 
 
