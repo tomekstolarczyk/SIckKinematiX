@@ -264,3 +264,28 @@ int gaussJordan66MatrixInversion(const Matrix66* M, Matrix66* result)
 
     return 1;
 }
+
+int calculateDLSInverseCoeff(const Matrix66* J, double lambda, Matrix66* J_DLS_Invert)
+{
+    // ostateczny wzor (J^T * J + lambda^2 * I)^-1 * J^T
+    Matrix66 J_T, Mult_JT_J, Mult_JT_J_inv, result;
+
+    // 1 : J^T * J 
+    transpose6x6Matrix(J, &J_T);
+    multiply6x6Matrix(&J_T, &J, &Mult_JT_J);
+
+    // 2 : J^T * J + lambda^2 * I
+    double lambda_sq = lambda*lambda;
+    for(size_t i = 0; i < 6; i++)
+    {
+        Mult_JT_J.data[6*i + i] += lambda_sq;
+    }
+
+    // 3: (J^T * J + lambda^2 * I)^-1
+    if(gaussJordan66MatrixInversion(&Mult_JT_J, &Mult_JT_J_inv) == 0) {return 0;}
+
+    // 4 ostateczny wzor : (J^T * J + lambda^2 * I)^-1 * J^T
+    multiply6x6Matrix(&Mult_JT_J_inv, &J_T, &result);
+
+    return 1;
+}

@@ -67,3 +67,8 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
         }
     }
 }
+
+void inverseKinematicsDLS(RobotArm6DoF* ramie, double* thetas, const Matrix44* targetPose)
+{
+
+}
