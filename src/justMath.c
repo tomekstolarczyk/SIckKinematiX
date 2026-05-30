@@ -272,7 +272,7 @@ int calculateDLSInverseCoeff(const Matrix66* J, double lambda, Matrix66* J_DLS_I
 
     // 1 : J^T * J 
     transpose6x6Matrix(J, &J_T);
-    multiply6x6Matrix(&J_T, &J, &Mult_JT_J);
+    multiply6x6Matrix(&J_T, J, &Mult_JT_J);
 
     // 2 : J^T * J + lambda^2 * I
     double lambda_sq = lambda*lambda;
@@ -285,7 +285,7 @@ int calculateDLSInverseCoeff(const Matrix66* J, double lambda, Matrix66* J_DLS_I
     if(gaussJordan66MatrixInversion(&Mult_JT_J, &Mult_JT_J_inv) == 0) {return 0;}
 
     // 4 ostateczny wzor : (J^T * J + lambda^2 * I)^-1 * J^T
-    multiply6x6Matrix(&Mult_JT_J_inv, &J_T, &result);
+    multiply6x6Matrix(&Mult_JT_J_inv, &J_T, J_DLS_Invert);
 
     return 1;
 }
