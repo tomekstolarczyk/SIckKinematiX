@@ -129,7 +129,7 @@ void inverseKinematicsDLS(RobotArm6DoF* ramie, double* thetas, const Matrix44* t
         calculateJacobian(ramie, thetas, &J);
 
         // 5. invert Jacobian - find DLS coeff
-        if(calculateDLSInverse(&J, lambda, &J_inv_DLS) == 0){break;}
+        if(calculateDLSInverseCoeff(&J, lambda, &J_inv_DLS) == 0){break;}
         
         // 6. find delta thetas
         // delta theta = J_inv_DLS * deltaX

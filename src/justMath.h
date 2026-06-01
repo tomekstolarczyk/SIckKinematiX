@@ -49,7 +49,7 @@ void transpose6x6Matrix(const Matrix66* M, Matrix66* result);
 // int not void cause with this we want to know if the operation finished with success
 // as not every matrix is invertable
 int gaussJordan66MatrixInversion(const Matrix66* M, Matrix66* result);
-int calculateDLSInverse(const Matrix66* J, double lambda, Matrix66* J_DLS_Invert);
+int calculateDLSInverseCoeff(const Matrix66* J, double lambda, Matrix66* J_DLS_Invert);
 
 #endif
 
