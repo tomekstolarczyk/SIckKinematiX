@@ -1,4 +1,5 @@
 #include "forwardKinematics.h"
+#include "jacobian.h"
 
 #ifndef inverseKinematics
 #define inverseKinematics

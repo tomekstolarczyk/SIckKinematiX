@@ -70,26 +70,55 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
 
 void inverseKinematicsDLS(RobotArm6DoF* ramie, double* thetas, const Matrix44* targetPose)
 {
+    int max_iters = 500;
+    double tolerance = 0.001;
+    double step_size = 0.1;
+    double lambda = 0.1;
 
-    // 1. where are we now?
     Matrix44 fkResults[6];
-    forwardKinematics(ramie, thetas, &fkResults);
+    Matrix66 J, J_inv_DLS;
 
-    // 2.1 error for xyz 
+    for (int i = 0; i < max_iters; i++)
+    {
+        // 1. where are we now?
+        forwardKinematics(ramie, thetas, &fkResults);
+        Matrix44* currentPose = &(fkResults[5]);
+
+        // 2.1 error for xyz 
+        Vector3D currentXYZ = {currentPose->data[3], currentPose->data[7], currentPose->data[11]};
+        Vector3D targetXYZ = {targetPose->data[3], targetPose->data[7], targetPose->data[11]};
+        Vector3D xyzErrorVector;
+        myVectorSub(&targetXYZ, &currentXYZ, &xyzErrorVector);
+
+        // 2.2 error for rotation
+        Vector3D rotationErrorVector;
+
+        // 3. are we on target?
+        double xyzErrorValue = myVectorLength(&xyzErrorVector);
+        double rotationErrorValue = myVectorLength(&rotationErrorVector);
+
+        if (xyzErrorValue <= tolerance && rotationErrorValue <= tolerance) {break;}
+
+        // 4. calculate Jacobian
+        calculateJacobian(ramie, thetas, &J);
+
+        // 5. invert Jacobian - find DLS coeff
+        if(calculateDLSInverse(&J, lambda, &J_inv_DLS) == 0){break;}
+        
+        // 6. find delta theta
+        // delta theta = J_inv_DLS * deltaX
+        double deltaX[] = {xyzErrorVector.x, xyzErrorVector.y, xyzErrorVector.z, rotationErrorVector.x, rotationErrorVector.y,rotationErrorVector.z};
+        double deltaTheta[6];
 
         
 
-    // 2.2 error for rotation
 
-    // 3. are we on target?
+        // 7. udpate thetas with step size
+        for(size_t i = 0; i<6; i++)
+        {
+            thetas[i] += deltaTheta[i]*step_size;
+            thetas[i] = atan2(sin(thetas[i]), cos(thetas[i])); // normalize angles
+        }
 
-    // 4. calculate Jacobian
-
-    // 5. inverse Jacobian - find DLS coeff
-
-    // 6. find delta theta
-
-    // 7. udpate thetas
-
-
+    }
 }
