@@ -71,4 +71,25 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
 void inverseKinematicsDLS(RobotArm6DoF* ramie, double* thetas, const Matrix44* targetPose)
 {
 
+    // 1. where are we now?
+    Matrix44 fkResults[6];
+    forwardKinematics(ramie, thetas, &fkResults);
+
+    // 2.1 error for xyz 
+
+        
+
+    // 2.2 error for rotation
+
+    // 3. are we on target?
+
+    // 4. calculate Jacobian
+
+    // 5. inverse Jacobian - find DLS coeff
+
+    // 6. find delta theta
+
+    // 7. udpate thetas
+
+
 }
