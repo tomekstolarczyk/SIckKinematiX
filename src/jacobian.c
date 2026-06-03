@@ -32,3 +32,13 @@ void calculateJacobian(const RobotArm6DoF* ramie, const double* thetas, Matrix66
         jacobianResultMatrix->data[5*6+i] = rotationAxis.z;
     }
 }
+
+double calculateManipulabilityYoshikawaIndex(const Matrix66* J)
+{
+    // Yoshikawa Manipulability Index :
+    // >    w = sqrt(detJ*detJ^T)
+    // but for square Jacobians (as for our robot) simplifies to 
+    // >    w = |detJ| 
+
+    return fabs(calculate6x6MatrixDeterminant(J));
+}
