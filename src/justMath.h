@@ -46,9 +46,11 @@ typedef struct {
 void printMatrix66(const Matrix66* M); 
 void multiply6x6Matrix(const Matrix66* M1, const Matrix66* M2, Matrix66* result);
 void transpose6x6Matrix(const Matrix66* M, Matrix66* result);
+
 // int not void cause with this we want to know if the operation finished with success
 // as not every matrix is invertable
 int gaussJordan66MatrixInversion(const Matrix66* M, Matrix66* result);
+double calculate6x6MatrixDeterminant(const Matrix66* M);
 int calculateDLSInverseCoeff(const Matrix66* J, double lambda, Matrix66* J_DLS_Invert);
 
 #endif

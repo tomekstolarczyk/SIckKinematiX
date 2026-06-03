@@ -198,7 +198,7 @@ int gaussJordan66MatrixInversion(const Matrix66* M, Matrix66* result)
         indexJedynki += 1;
     }
 
-    // 2. the actualy algorithm - turn A into I
+    // 2. the actual algorithm - turn A into I
     for(size_t c = 0; c<6; c++) // for each column
     {
         // 3. partial pivoting
@@ -263,6 +263,67 @@ int gaussJordan66MatrixInversion(const Matrix66* M, Matrix66* result)
     }
 
     return 1;
+}
+
+double calculate6x6MatrixDeterminant(const Matrix66* M)
+{
+    // calculating the determinant using gaussian elimination with partial pivoting
+    double det = 1.0;
+
+    // 1. create result matrix
+    double A[36];
+    for(size_t i = 0; i<36; i++) {A[i] = M->data[i];}
+
+    // 2. iterate through each column one by one and zero it out 
+    for(size_t c = 0; c<6; c++)
+    {
+
+        // 3. find pivot for this column - meaning max element
+        double pivot = fabs(A[c*6+c]); 
+        size_t pivotRow = c;
+        for(size_t r = c+1; r < 6; r++)
+        {
+            if(fabs(A[r*6+c])>pivot) 
+            {
+                pivot = fabs(A[r*6+c]); 
+                pivotRow = r;
+            }
+        }
+
+        // 4. singularity found
+        if(pivot < 1e-9) {return 0.0;}
+        
+        // 5. put pivot in its place - change rows if needed
+        if(pivotRow != c)
+        {
+            for(size_t j = 0; j<6; j++) // kazdy element z wiersza
+            {   
+                double temp = A[c*6+j];
+                A[c*6+j] = A[pivotRow*6+j];
+                A[pivotRow*6+j] = temp;
+            }
+
+            // switching rows changes the determinant's sign
+            det = -det;
+        }
+
+        // 6. zero out the entire column
+        for(size_t r = c+1; r<6; r++)
+        {
+            double coeff = A[r*6+c]/A[c*6+c];
+
+            for(size_t j = c+1; j<6;j++)
+            {
+                // new row -= coeff*(pivot row)
+                A[r*6+j] = coeff*A[c*6+j];
+            }
+        }
+
+        // 7. 
+        det *= A[c*6+c];
+    }
+
+    return det;
 }
 
 int calculateDLSInverseCoeff(const Matrix66* J, double lambda, Matrix66* J_DLS_Invert)
