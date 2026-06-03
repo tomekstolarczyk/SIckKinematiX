@@ -296,7 +296,7 @@ double calculate6x6MatrixDeterminant(const Matrix66* M)
         // 5. put pivot in its place - change rows if needed
         if(pivotRow != c)
         {
-            for(size_t j = 0; j<6; j++) // kazdy element z wiersza
+            for(size_t j = c; j<6; j++) // tylko niezerowe elementy
             {   
                 double temp = A[c*6+j];
                 A[c*6+j] = A[pivotRow*6+j];
@@ -315,7 +315,7 @@ double calculate6x6MatrixDeterminant(const Matrix66* M)
             for(size_t j = c+1; j<6;j++)
             {
                 // new row -= coeff*(pivot row)
-                A[r*6+j] = coeff*A[c*6+j];
+                A[r*6+j] -= coeff*A[c*6+j];
             }
         }
 
