@@ -9,7 +9,8 @@ module = setuptools.Extension(
         "src/justMath.c",
         "src/forwardKinematics.c",
         "src/inverseKinematics.c",
-        "src/workspaceAnalysis.c"
+        "src/workspaceAnalysis.c",
+        "src/jacobian.c"
     ],
     include_dirs=[numpy.get_include()] 
 )

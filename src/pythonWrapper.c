@@ -109,7 +109,6 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
     
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
 
-
     // wymiar tablicy - dla numpy
     npy_intp dims[] = {pointsNumber};
 
@@ -140,13 +139,65 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
     // nie ma co go zwiekszac juz
 }
 
+// pakujemy inverse kinematics DLS
+static PyObject* inverseKinDLSWrapped(PyObject* self, PyObject* args)
+{
+    // 1 rozpakowujemy
+    PyObject* robotCapsule;
+    PyObject* targetPoseList;
+    double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0, t6 = 0.0;
+    if (!PyArg_ParseTuple(args, "OO|dddddd", &robotCapsule, &targetPoseList, &t1, &t2, &t3, &t4, &t5, &t6)) 
+    {return NULL;} 
+
+    RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
+    double thetas[] = {t1, t2, t3, t4, t5, t6};
+
+    // konwersja pythonowej listy na nasza strukture Matrix44
+    Matrix44 targetPoseMatrix;
+    for(size_t i = 0; i< 16; i++)
+    {
+        PyObject* item = PySequence_GetItem(targetPoseList, i);
+        targetPoseMatrix.data[i] = PyFloat_AsDouble(item);
+        Py_DECREF(item);
+    }
+
+    // 2 obliczenia
+    inverseKinematicsDLS(ramie, thetas, &targetPoseMatrix);
+
+    // 3 pakujemy
+    return Py_BuildValue("dddddd", thetas[0], thetas[1], thetas[2], thetas[3], thetas[4], thetas[5]);
+}
+
+// pakujemy yoshikawe
+static PyObject* yoshikawaWrapped(PyObject* self, PyObject* args)
+{
+    // 1 rozpakowujemy
+    PyObject* robotCapsule;
+    double t1, t2, t3, t4, t5, t6;
+    if (!PyArg_ParseTuple(args, "Odddddd", &robotCapsule, &t1, &t2, &t3, &t4, &t5, &t6)) {return NULL;} 
+
+    double thetas[] = {t1, t2, t3, t4, t5, t6}; Matrix66 jacobian;
+    RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
+
+    // 2 obliczenia
+    calculateJacobian(ramie, thetas, &jacobian);
+    double yoshikawa = calculateManipulabilityYoshikawaIndex(&jacobian);
+
+    // 3 pakujemy
+    return PyFloat_FromDouble(yoshikawa);
+}
+
 // ponizej tylko boilerplate-mapowanie do pythona --------------------------------------------------------------------------------
 
 static PyMethodDef SickMethods[] = {
+    // {"nazwa_w_pythonie", wskaznik_na_funkcje_c, FLAGA, "docstring"}
     {"build_robot", buildRobotArmWrapped, METH_VARARGS, "Buduje robota na podstawie parametrów MDH."},
     {"fk", forwardKinWrapped, METH_VARARGS, "Liczy Kinematyke Prosta (FK) dla 6 katow."},
     {"ik_ccd", inverseKinCCDWrapped, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK CCD) do celu X, Y, Z."},
     {"workspace", workspaceAnalyzerWrapped, METH_VARARGS, "Generuje chmure punktow przestrzeni roboczej"},
+    {"ik_dls", inverseKinDLSWrapped, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK DLS) do celu X, Y, Z i konkretnej rotacji."},
+    {"yoshikawa", yoshikawaWrapped, METH_VARARGS, "Liczy Manipulability Index Yoshikawy."},
+    
     {NULL, NULL, 0, NULL} 
 };
 
