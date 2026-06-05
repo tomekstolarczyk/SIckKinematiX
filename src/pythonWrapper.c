@@ -116,24 +116,26 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
     PyObject* x_array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
     PyObject* y_array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
     PyObject* z_array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
+    PyObject* yoshikawas = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
 
     // jesli ktoras z tablic niepoprawnie sie zainicjalizuje to czyscimy
-    if(!x_array || !y_array || !z_array) {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); return NULL;}
+    if(!x_array || !y_array || !z_array || !yoshikawas) {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); return NULL;}
 
     // teraz wyciagamy z tych obiektow wskazniki na tablice danych
     double* x_data = (double*) PyArray_DATA((PyArrayObject*) x_array);
     double* y_data = (double*) PyArray_DATA((PyArrayObject*) y_array);
     double* z_data = (double*) PyArray_DATA((PyArrayObject*) z_array);
+    double* yoshikawas_data = (double*) PyArray_DATA((PyArrayObject*) yoshikawas);
 
     // printf("--> [C DEBUG] Tablice NumPy utworzone, wchodze do workspaceAnalysis...\n");
 
     // nasz agorytm wypelnia zadane tablice danymi
-    workspaceAnalysis(ramie, pointsNumber, x_data, y_data, z_data);
+    workspaceAnalysis(ramie, pointsNumber, x_data, y_data, z_data, yoshikawas_data);
 
     // printf("--> [C DEBUG] Wróciłem z workspaceAnalysis. Pakuje do Pythona...\n");
 
     // pakujemy to i odslyamy wskaznik na to do pythona
-    return Py_BuildValue("NNN", x_array, y_array, z_array);
+    return Py_BuildValue("NNNN", x_array, y_array, z_array, yoshikawas);
     // N nie O bo nie chcemy zwiekszac licznika referencji
     // kiedy wywolalismy PyArray_SimpleNew, NumPy stworzylo obiekt i od razu ustawilo jego licznik na 1
     // nie ma co go zwiekszac juz

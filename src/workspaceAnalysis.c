@@ -3,7 +3,7 @@
 #include <time.h> // for random results
 #include "workspaceAnalysis.h"
 
-void workspaceAnalysis(RobotArm6DoF* ramie, size_t pointsNumber, double* punkty_x, double* punkty_y, double* punkty_z)
+void workspaceAnalysis(RobotArm6DoF* ramie, size_t pointsNumber, double* punkty_x, double* punkty_y, double* punkty_z, double* yoshikawas)
 {
     // 1. losujemy duzo roznych tet
     // 2. z tego zbieramy z fk punkty docelowe
@@ -31,5 +31,10 @@ void workspaceAnalysis(RobotArm6DoF* ramie, size_t pointsNumber, double* punkty_
         punkty_x[j] = fkResults[5].data[3];
         punkty_y[j] = fkResults[5].data[7];
         punkty_z[j] = fkResults[5].data[11];
+
+        // znajdujemy index yoshikawa tego punktu
+        Matrix66 jacobian;
+        calculateJacobian(ramie, thetas, &jacobian);
+        yoshikawas[j] = calculateManipulabilityYoshikawaIndex(&jacobian);
     }
 }
