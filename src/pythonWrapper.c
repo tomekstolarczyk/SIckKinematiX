@@ -119,7 +119,8 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
     PyObject* yoshikawas = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
 
     // jesli ktoras z tablic niepoprawnie sie zainicjalizuje to czyscimy
-    if(!x_array || !y_array || !z_array || !yoshikawas) {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); return NULL;}
+    if(!x_array || !y_array || !z_array || !yoshikawas) 
+    {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); Py_XDECREF(y_array); Py_XDECREF(yoshikawas); return NULL;}
 
     // teraz wyciagamy z tych obiektow wskazniki na tablice danych
     double* x_data = (double*) PyArray_DATA((PyArrayObject*) x_array);
