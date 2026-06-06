@@ -1,113 +1,254 @@
-# aplikacja webowa w dashu - do wizualizacji naszego pakietu
-
-# importy
-from dash import Dash, dcc, html, Input, Output 
+import dash
+from dash import Dash, dcc, html, Input, Output, State
 import plotly.graph_objects as go 
 import numpy as np  
 import math 
 import sickkinematix.c_kinematix as sk 
 
-# konfigurujemy naszego robota (model UR5) 
+#################################################### config ####################################################
+
+# robot 
 a = [0.0, 0.0, -0.425, -0.39225, 0.0, 0.0]
 alpha = [0.0, math.pi/2.0, 0.0, 0.0, math.pi/2.0, -math.pi/2.0]
 d = [0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823]
 offsets = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 robot = sk.build_robot(a, alpha, d, offsets)
 
+# glowny obiekt dashowy
+app = Dash(__name__) 
 
-app = Dash() # tworzymy glowny obiekt naszej aplikacji
-bone_colors = ['#00f3ff', '#00d0ff', '#00adff', '#008aff', '#0066ff', '#0044ff']
+# pamiec stanu
+ostatnie_katy_ik = [0.0, -math.pi/4, 0.0, 0.0, 0.0, 0.0] 
+chmura_x, chmura_y, chmura_z, chmura_w = None, None, None, None 
 
+# colors
+BG_COLOR = '#0f111a'       
+PANEL_COLOR = '#171a26'    
+GRID_COLOR = '#262b3d'     
+TEXT_COLOR = '#e2e8f0'     
+ACCENT_COLOR = '#0ea5e9'   
+BONE_COLOR = '#e2e8f0'     
+BASE_COLOR = '#334155'     
+AXIS_COLOR = '#10b981'     
 
-# lista sliderow
-sliders_list = []
-for i in range(6): 
-    sliders_list.append(
-        html.Div([ 
-            html.Label(f"Joint {i+1} (\u03B8)", style={'color': '#00d0ff'}), # etyiketa, \u03B8 to kod znaku theta
-            dcc.Slider(
-                id=f'slider-j{i+1}', #unikalne id slidera
-                min=-np.pi, max=np.pi, step=0.05, value=0.0, # limity suwakow
-                # osie zakresy suwakow zaznaczone
-                marks={ 
-                    -np.pi: {'label': '-π', 'style': {'color': '#00d0ff'}},
-                    0: {'label': '0', 'style': {'color': '#00d0ff'}},
-                    np.pi: {'label': 'π', 'style': {'color': '#00d0ff'}}
-                },
-                tooltip={"placement": "bottom", "always_visible": False}, # dymek z wartoscia
-                updatemode='drag') # wysylamy dane do pythona przy kazdym ruchu myszki
-        ], 
-        style={'marginBottom': '20px'})
-    )
+BONE_WIDTHS = [20, 16, 12, 10, 8, 6] 
 
-# 1 LAYOUT
+#################################################### helper funcs ####################################################
+
+# Euler do Macierzy (Dla DLS)
+def euler_to_matrix(tx, ty, tz, rx, ry, rz):
+    cx, sx = np.cos(rx), np.sin(rx)
+    cy, sy = np.cos(ry), np.sin(ry)
+    cz, sz = np.cos(rz), np.sin(rz)
+    
+    return [
+        cy*cz, sx*sy*cz - cx*sz, cx*sy*cz + sx*sz, tx,
+        cy*sz, sx*sy*sz + cx*cz, cx*sy*sz - sx*cz, ty,
+        -sy,   sx*cy,            cx*cy,            tz,
+        0.0,   0.0,              0.0,              1.0
+    ]
+
+#################################################### layout ####################################################
 app.layout = html.Div(
-    style={'backgroundColor': '#0f1115', 'color': '#32ff7e', 'height': '100vh', 'display': 'flex', 'fontFamily': 'Courier New'}, 
+    style={'backgroundColor': BG_COLOR, 'height': '100vh', 'display': 'flex', 'fontFamily': 'Segoe UI, Arial, sans-serif'}, 
     children=[
 
-    # LEWA KOLUMNA
+    # LEWA KOLUMNA 
     html.Div(
-        style={'width': '30%', 'padding': '20px', 'borderRight': '1px solid #2a2d35'}, 
+        style={'width': '28%', 'padding': '25px', 'backgroundColor': PANEL_COLOR, 'borderRight': f'1px solid {GRID_COLOR}', 'boxShadow': '2px 0 15px rgba(0,0,0,0.8)', 'zIndex': 10, 'overflowY': 'auto'}, 
         children=[
-        html.H2("SICK KINEMATIX", style={'color': '#ff007f'}),
-        html.P("FORWARD KINEMATICS CONTROL"),
-        html.Div(sliders_list, style={'marginTop': '30px'})]),
+            html.H2("SICK KINEMATIX", style={'color': BONE_COLOR, 'marginBottom': '5px', 'fontWeight': '900', 'letterSpacing': '2px'}),
+            html.P("6-DoF MANIPULATOR CONTROL", style={'color': ACCENT_COLOR, 'fontSize': '12px', 'fontWeight': 'bold', 'marginBottom': '25px'}),
+            
+            dcc.Tabs(id='tabs-mode', value='tab-fk', colors={"border": GRID_COLOR, "primary": ACCENT_COLOR, "background": PANEL_COLOR}, children=[
+                dcc.Tab(label='FK', value='tab-fk', style={'color': TEXT_COLOR, 'backgroundColor': PANEL_COLOR}),
+                dcc.Tab(label='CCD (XYZ)', value='tab-ccd', style={'color': TEXT_COLOR, 'backgroundColor': PANEL_COLOR}),
+                dcc.Tab(label='DLS (Rot)', value='tab-dls', style={'color': TEXT_COLOR, 'backgroundColor': PANEL_COLOR}),
+                dcc.Tab(label='Yoshikawa', value='tab-ws', style={'color': TEXT_COLOR, 'backgroundColor': PANEL_COLOR}),
+            ]),
+            
+            # ZAKLADKA 1: FORWARD KINEMATICS 
+            html.Div(id='panel-fk', style={'marginTop': '20px'}, children=[
+                html.P("Sterowanie kątami stawów. Zielone linie to osie obrotu.", style={'color': TEXT_COLOR, 'fontSize': '12px', 'marginBottom': '15px'})
+            ] + [
+                html.Div([
+                    html.Label(f"Joint {i+1} (\u03B8)", style={'color': ACCENT_COLOR, 'fontSize': '12px', 'fontWeight': 'bold'}),
+                    dcc.Slider(id=f'slider-j{i+1}', min=-np.pi, max=np.pi, step=0.01, value=ostatnie_katy_ik[i],
+                               marks={-3.14: '-π', 0: '0', 3.14: 'π'}, updatemode='drag')
+                ], style={'marginBottom': '10px'}) for i in range(6)
+            ]),
+            
+            # ZAKLADKA 2: IK CCD 
+            html.Div(id='panel-ccd', style={'marginTop': '20px'}, children=[
+                html.H4("Kinematyka Odwrotna (Tylko Pozycja)", style={'color': '#fbbf24', 'fontSize': '14px'}),
+                html.P("Algorytm CCD. Dociera w każdy punkt zasięgu ramienia ignorując kąt natarcia chwytaka.", style={'color': TEXT_COLOR, 'fontSize': '12px', 'marginBottom': '20px'})
+            ] + [
+                html.Div([
+                    html.Label(f"Target {axis.upper()} (m)", style={'color': ACCENT_COLOR, 'fontSize': '12px', 'fontWeight': 'bold'}),
+                    dcc.Slider(id=f'slider-ccd-{axis}', min=-0.8, max=0.8, step=0.01, value=0.0, marks={-0.8: '-0.8', 0: '0', 0.8: '0.8'}, updatemode='drag')
+                ], style={'marginBottom': '15px'}) for axis in ['x', 'y', 'z']
+            ]),
 
-    # PRAWA KOLUMNA
-    html.Div(
-        style={'width': '70%', 'padding': '0'}, 
-        children=[dcc.Graph(id='robot-3d-graph', style={'height': '100vh'})])
+            # ZAKLADKA 3: IK DLS 
+            html.Div(id='panel-dls', style={'marginTop': '20px'}, children=[
+                html.H4("Kinematyka Odwrotna z Orientacją", style={'color': '#fbbf24', 'fontSize': '14px'}),
+                html.P("Algorytm DLS. Celuje w punkt i wymusza odpowiedni kąt obrotu chwytaka.", style={'color': TEXT_COLOR, 'fontSize': '12px', 'marginBottom': '15px'}),
+                
+                html.H5("Pozycja (XYZ)", style={'color': ACCENT_COLOR, 'fontSize': '12px', 'marginBottom': '5px'}),
+                dcc.Slider(id='slider-dls-x', min=-0.8, max=0.8, step=0.01, value=0.3, updatemode='drag'),
+                dcc.Slider(id='slider-dls-y', min=-0.8, max=0.8, step=0.01, value=0.0, updatemode='drag'),
+                dcc.Slider(id='slider-dls-z', min=-0.1, max=1.0, step=0.01, value=0.3, updatemode='drag'),
+                
+                html.H5("Rotacja (Roll-Pitch-Yaw)", style={'color': AXIS_COLOR, 'fontSize': '12px', 'marginTop': '15px', 'marginBottom': '5px'}),
+                dcc.Slider(id='slider-dls-rx', min=-3.14, max=3.14, step=0.1, value=0.0, updatemode='drag'),
+                dcc.Slider(id='slider-dls-ry', min=-3.14, max=3.14, step=0.1, value=1.57, updatemode='drag'),
+                dcc.Slider(id='slider-dls-rz', min=-3.14, max=3.14, step=0.1, value=0.0, updatemode='drag'),
+            ]),
+
+            # ZAKLADKA 4: WORKSPACE ANALYSIS 
+            html.Div(id='panel-ws', style={'marginTop': '20px'}, children=[
+                html.H4("Analiza Zwinności (Yoshikawa Index)", style={'color': '#fbbf24', 'fontSize': '14px'}),
+                html.P("Chmura punktów pokazująca zwinność całego ramienia. Odcinamy nieużyteczny szum o najniższym wskaźniku i pokazujemy główny rdzeń przestrzeni operacyjnej.", style={'color': TEXT_COLOR, 'fontSize': '12px', 'lineHeight': '1.5'}),
+                html.Hr(style={'borderColor': GRID_COLOR, 'margin': '20px 0'}),
+                html.Label("Próg Odcięcia (Minimalna Zwinność)", style={'color': ACCENT_COLOR, 'fontSize': '12px', 'fontWeight': 'bold'}),
+                html.P("Suwak ukrywa krawędzie i osobliwości. Przesuwając go w prawo widzisz, gdzie postawić np. stół roboczy.", style={'color': 'gray', 'fontSize': '11px'}),
+                dcc.Slider(id='w-filter', min=0.0, max=0.1, step=0.005, value=0.02, marks={0: 'Zasięg', 0.1: 'Tylko Rdzeń'}, updatemode='drag')
+            ])
+        ]
+    ),
+
+    # PRAWA KOLUMNA 
+    html.Div(style={'width': '72%', 'padding': '0', 'position': 'relative'}, children=[
+        dcc.Graph(id='robot-3d-graph', style={'height': '100vh'}, config={'displayModeBar': False})
+    ])
 ])
 
-# 2 CALLBACKS
+
+#################################################### callbacks ####################################################
 @app.callback(
-    Output('robot-3d-graph', 'figure'),
-    [Input(f'slider-j{i+1}', 'value') for i in range(6)]
+    [Output('robot-3d-graph', 'figure'), 
+     Output('panel-fk', 'style'), Output('panel-ccd', 'style'), Output('panel-dls', 'style'), Output('panel-ws', 'style')] +
+    [Output(f'slider-j{i+1}', 'value') for i in range(6)] +
+    [Output(f'slider-ccd-{axis}', 'value') for axis in ['x', 'y', 'z']],
+    [Input('tabs-mode', 'value'), Input('w-filter', 'value')] +
+    [Input(f'slider-j{i+1}', 'value') for i in range(6)] +
+    [Input(f'slider-ccd-{axis}', 'value') for axis in ['x', 'y', 'z']] +
+    [Input('slider-dls-x', 'value'), Input('slider-dls-y', 'value'), Input('slider-dls-z', 'value'),
+     Input('slider-dls-rx', 'value'), Input('slider-dls-ry', 'value'), Input('slider-dls-rz', 'value')]
 )
-def update_robot(t1,t2,t3,t4,t5,t6):
-
-    #wywolujemy nasze forward kinematics
-    fkResults = sk.fk(robot, t1, t2, t3, t4, t5, t6)
-
-    # rozpakowujemy listy do X, Y, Z dla Plotly
-    Xs = [vector[0] for vector in fkResults]
-    Ys = [vector[1] for vector in fkResults]
-    Zs = [vector[2] for vector in fkResults]
-
-    figure = go.Figure() # tworzymy obiekt do rysowania plotly
-
-    # rysujemy linki robota
-    for j in range(6):
-        figure.add_trace(go.Scatter3d(
-            x=[Xs[j], Xs[j+1]], 
-            y=[Ys[j], Ys[j+1]], 
-            z=[Zs[j], Zs[j+1]],
-            mode='lines', 
-            line=dict(width=10, color=bone_colors[j]), 
-            showlegend=False))
-
-    # rysujemy przeguby
-    figure.add_trace(go.Scatter3d(
-        x=Xs, 
-        y=Ys, 
-        z=Zs, 
-        mode='markers',
-        marker=dict(size=8, color='#ff007f', line=dict(color='white', width=1)), 
-        showlegend=False))
+def master_update(tab, w_filter, 
+                  j1, j2, j3, j4, j5, j6, 
+                  cx, cy, cz, 
+                  dx, dy, dz, drx, dry, drz):
+    global ostatnie_katy_ik, chmura_x, chmura_y, chmura_z, chmura_w
     
-    # Ustawienia sceny (Ciemny motyw)
-    figure.update_layout(
-        uirevision='blokada-kamery', # blokada kamery
-        paper_bgcolor='#0f1115', plot_bgcolor='#0f1115', margin=dict(l=0, r=0, t=0, b=0),
+    ctx = dash.callback_context
+    trigger = ctx.triggered[0]['prop_id'] if ctx.triggered else 'init'
+
+    # 1. OBSLUGA LOGIKI NA PODSTAWIE ZAKŁADKI 
+    if tab == 'tab-fk':
+        ostatnie_katy_ik = [j1, j2, j3, j4, j5, j6]
+        obecne_xyz = sk.fk(robot, *ostatnie_katy_ik)[-1]
+        cx, cy, cz = obecne_xyz[0], obecne_xyz[1], obecne_xyz[2]
+
+    elif tab == 'tab-ccd':
+        ostatnie_katy_ik = sk.ik_ccd(robot, cx, cy, cz, *ostatnie_katy_ik, 1000, 0.005)
+        j1, j2, j3, j4, j5, j6 = ostatnie_katy_ik
+
+    elif tab == 'tab-dls' or tab == 'tab-ws':
+        target_matrix = euler_to_matrix(dx, dy, dz, drx, dry, drz)
+        ostatnie_katy_ik = sk.ik_dls(robot, target_matrix, *ostatnie_katy_ik, 300, 0.005, 0.1, 0.1)
+        j1, j2, j3, j4, j5, j6 = ostatnie_katy_ik
+
+    # 2. POBIERANIE DANYCH Z C API ---
+    fkResults = sk.fk(robot, *ostatnie_katy_ik)
+    Xs, Ys, Zs = [v[0] for v in fkResults], [v[1] for v in fkResults], [v[2] for v in fkResults]
+    Zx, Zy, Zz = [v[3] for v in fkResults], [v[4] for v in fkResults], [v[5] for v in fkResults]
+
+    fig = go.Figure()
+
+    # PODŁOGA I CIEN
+    fig.add_trace(go.Mesh3d(x=[-1, 1, 1, -1], y=[-1, -1, 1, 1], z=[0,0,0,0], color=GRID_COLOR, opacity=0.3, hoverinfo='skip'))
+    fig.add_trace(go.Scatter3d(x=Xs, y=Ys, z=[0]*len(Zs), mode='lines', line=dict(width=8, color='rgba(0, 0, 0, 0.8)'), hoverinfo='skip'))
+
+    # ZAKLADKA 4: WORKSPACE 
+    if tab == 'tab-ws':
+        if chmura_x is None:
+            chmura_x, chmura_y, chmura_z, chmura_w = sk.workspace(robot, 150000) 
+        
+        # Wokselizacja (poki co z poziomu pthona, wypada to z c zrobic)
+        GRID = 0.06
+        cx_vox = np.round(np.array(chmura_x) / GRID) * GRID
+        cy_vox = np.round(np.array(chmura_y) / GRID) * GRID
+        cz_vox = np.round(np.array(chmura_z) / GRID) * GRID
+        cw_arr = np.array(chmura_w)
+
+        maska = (cw_arr >= w_filter)
+        
+        fig.add_trace(go.Scatter3d(
+            x=cx_vox[maska], y=cy_vox[maska], z=cz_vox[maska], mode='markers',
+            marker=dict(
+                size=6, opacity=0.7,     
+                color=cw_arr[maska], 
+                colorscale='Viridis',  
+                cmin=0.0, cmax=0.1,    
+                showscale=True, 
+                colorbar=dict(title="w (Zwinność)", tickfont=dict(color=TEXT_COLOR), x=0)
+            ), 
+            hoverinfo='skip' 
+        ))
+
+    # RYSOWANIE ROBOTA 
+    fig.add_trace(go.Scatter3d(x=[0, 0], y=[0, 0], z=[0, Zs[0]], mode='lines', line=dict(width=30, color=BASE_COLOR), hoverinfo='skip'))
+    for j in range(6):
+        fig.add_trace(go.Scatter3d(x=[Xs[j], Xs[j+1]], y=[Ys[j], Ys[j+1]], z=[Zs[j], Zs[j+1]], mode='lines', line=dict(width=BONE_WIDTHS[j], color=BONE_COLOR), hoverinfo='skip'))
+        
+    # Przeguby
+    fig.add_trace(go.Scatter3d(x=Xs, y=Ys, z=Zs, mode='markers', marker=dict(size=[14, 12, 10, 10, 10, 10, 14], color=ACCENT_COLOR, line=dict(color=BG_COLOR, width=2)), hoverinfo='skip'))
+
+    # OSIE OBROTU 
+    for j in range(6):
+        L = 0.12 
+        fig.add_trace(go.Scatter3d(
+            x=[Xs[j], Xs[j] + Zx[j]*L], 
+            y=[Ys[j], Ys[j] + Zy[j]*L], 
+            z=[Zs[j], Zs[j] + Zz[j]*L],
+            mode='lines', line=dict(color=AXIS_COLOR, width=5), hoverinfo='skip'
+        ))
+
+    # CELE DLA IK 
+    if tab == 'tab-ccd':
+        fig.add_trace(go.Scatter3d(x=[cx], y=[cy], z=[cz], mode='markers', marker=dict(size=12, color='#fbbf24', symbol='cross'), name="Cel CCD", hoverinfo='skip'))
+    
+    elif tab == 'tab-dls' or tab == 'tab-ws':
+        fig.add_trace(go.Scatter3d(x=[dx], y=[dy], z=[dz], mode='markers', marker=dict(size=8, color='#fbbf24', symbol='diamond'), hoverinfo='skip'))
+        target_matrix = euler_to_matrix(dx, dy, dz, drx, dry, drz)
+        tzx, tzy, tzz = target_matrix[2], target_matrix[6], target_matrix[10]
+        fig.add_trace(go.Scatter3d(
+            x=[dx, dx + tzx*0.2], y=[dy, dy + tzy*0.2], z=[dz, dz + tzz*0.2],
+            mode='lines', line=dict(color='#fbbf24', width=4, dash='dash'), hoverinfo='skip'
+        ))
+
+    # USTAWIENIA SCENY
+    fig.update_layout(
+        showlegend=False, uirevision='const', paper_bgcolor=BG_COLOR, plot_bgcolor=BG_COLOR, margin=dict(l=0, r=0, t=0, b=0),
         scene=dict(
-            xaxis=dict(range=[-1.0, 1.0], backgroundcolor='#171a21', gridcolor='#2a2d35', color='white'),
-            yaxis=dict(range=[-1.0, 1.0], backgroundcolor='#171a21', gridcolor='#2a2d35', color='white'),
-            zaxis=dict(range=[-1.0, 1.0], backgroundcolor='#171a21', gridcolor='#2a2d35', color='white'),
-            aspectmode='cube'
+            xaxis=dict(range=[-1.0, 1.0], backgroundcolor=BG_COLOR, gridcolor=GRID_COLOR, showbackground=True, zerolinecolor=GRID_COLOR, tickfont=dict(color=TEXT_COLOR)),
+            yaxis=dict(range=[-1.0, 1.0], backgroundcolor=BG_COLOR, gridcolor=GRID_COLOR, showbackground=True, zerolinecolor=GRID_COLOR, tickfont=dict(color=TEXT_COLOR)),
+            zaxis=dict(range=[0.0, 1.2], backgroundcolor=BG_COLOR, gridcolor=GRID_COLOR, showbackground=True, zerolinecolor=GRID_COLOR, tickfont=dict(color=TEXT_COLOR)),
+            aspectmode='manual', aspectratio=dict(x=1, y=1, z=0.6)
         )
     )
+
+    # Przelaczanie widocznosci paneli bocznych
+    s_fk = {'display': 'block'} if tab == 'tab-fk' else {'display': 'none'}
+    s_ccd = {'display': 'block'} if tab == 'tab-ccd' else {'display': 'none'}
+    s_dls = {'display': 'block'} if tab == 'tab-dls' else {'display': 'none'}
+    s_ws = {'display': 'block'} if tab == 'tab-ws' else {'display': 'none'}
     
-    return figure
-    
+    return (fig, s_fk, s_ccd, s_dls, s_ws, j1, j2, j3, j4, j5, j6, cx, cy, cz)
+
+###################################################################################################################################
+
 if __name__ == '__main__':
     app.run(debug=True)
