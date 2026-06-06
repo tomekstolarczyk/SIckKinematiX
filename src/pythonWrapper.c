@@ -61,15 +61,22 @@ static PyObject* forwardKinWrapped(PyObject* self, PyObject* args)
 
     PyObject* lista = PyList_New(7);
 
-    PyObject* baza = Py_BuildValue("ddd", 0.0, 0.0, 0.0);
+    PyObject* baza = Py_BuildValue("dddddd", 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
     PyList_SetItem(lista, 0, baza);
 
     for(size_t i = 0; i<6; i++)
     {
+        // pozycja przegubu
         double x = results[i].data[3];
         double y = results[i].data[7];
         double z = results[i].data[11];
-        PyObject* wektor = Py_BuildValue("ddd", x, y, z);
+
+        // Os obrotu przegubu (przyda sie do wizualizacji)
+        double zx = results[i].data[2];
+        double zy = results[i].data[6];
+        double zz = results[i].data[10];
+        
+        PyObject* wektor = Py_BuildValue("dddddd", x, y, z, zx, zy, zz);
 
         PyList_SetItem(lista, i+1, wektor);
     }
