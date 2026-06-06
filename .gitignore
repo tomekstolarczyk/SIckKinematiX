@@ -11,9 +11,6 @@ tests_python/wizu2.py
 tests_python/capsule.py
 tests_python/test_dls_yoshikawa.py
 temp.py
-# temporarily
-dashboard/app.py
-
 
 # github boilerplate (projects in c) ----------------------------------------------------------------------------------------------------
 

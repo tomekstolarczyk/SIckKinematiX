@@ -83,16 +83,18 @@ static PyObject* inverseKinCCDWrapped(PyObject* self, PyObject* args)
     // 1. rozpakowanie 
     // "ddd|dddddd" -> target + katy startowe (opcjonalnie)
     double tx, ty, tz, t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0, t6 = 0.0;
+    int max_iters = 5000;      // default
+    double tolerance = 0.001;  // default
     PyObject* robotCapsule;
-    if (!PyArg_ParseTuple(args, "Oddd|dddddd", &robotCapsule, &tx, &ty, &tz, &t1, &t2, &t3, &t4, &t5, &t6)) {return NULL;}
+    if (!PyArg_ParseTuple(args, "Oddd|ddddddid", &robotCapsule, &tx, &ty, &tz, &t1, &t2, &t3, &t4, &t5, &t6, &max_iters, &tolerance)) {return NULL;}
     
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
 
     // 2. przeliczamy, start z pozycji zerowej
     Vector3D target = {tx, ty, tz};
-
     double thetas[] = {t1, t2, t3, t4, t5, t6};
-    inverseKinematicsCCD(ramie, thetas, &target);
+
+    inverseKinematicsCCD(ramie, thetas, &target, max_iters, tolerance);
 
     // 3. pakujemy
     return Py_BuildValue("dddddd", thetas[0], thetas[1], thetas[2]
@@ -149,7 +151,12 @@ static PyObject* inverseKinDLSWrapped(PyObject* self, PyObject* args)
     PyObject* robotCapsule;
     PyObject* targetPoseList;
     double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0, t5 = 0.0, t6 = 0.0;
-    if (!PyArg_ParseTuple(args, "OO|dddddd", &robotCapsule, &targetPoseList, &t1, &t2, &t3, &t4, &t5, &t6)) 
+    int max_iters = 500;       // default
+    double tolerance = 0.001;  // default
+    double step_size = 0.1;    // default
+    double lambda = 0.1;       // default
+
+    if (!PyArg_ParseTuple(args, "OO|ddddddiddd", &robotCapsule, &targetPoseList, &t1, &t2, &t3, &t4, &t5, &t6, &max_iters, &tolerance, &step_size, &lambda))
     {return NULL;} 
 
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
@@ -165,7 +172,7 @@ static PyObject* inverseKinDLSWrapped(PyObject* self, PyObject* args)
     }
 
     // 2 obliczenia
-    inverseKinematicsDLS(ramie, thetas, &targetPoseMatrix);
+    inverseKinematicsDLS(ramie, thetas, &targetPoseMatrix, max_iters, tolerance, step_size, lambda);
 
     // 3 pakujemy
     return Py_BuildValue("dddddd", thetas[0], thetas[1], thetas[2], thetas[3], thetas[4], thetas[5]);

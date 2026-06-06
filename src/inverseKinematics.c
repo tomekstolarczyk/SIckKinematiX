@@ -2,11 +2,9 @@
 
 #include "inverseKinematics.h"
 
-void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* target)
+void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* target, int max_iters, double tolerance)
 {
     Matrix44 fkResults[6];
-    int max_iters = 5000;
-    double tolerance = 0.001;
 
     // 1. iteracje zewnetrzne 
     for(size_t iter = 0; iter < max_iters ; iter++)
@@ -68,12 +66,8 @@ void inverseKinematicsCCD(RobotArm6DoF* ramie, double* thetas, const Vector3D* t
     }
 }
 
-void inverseKinematicsDLS(RobotArm6DoF* ramie, double* thetas, const Matrix44* targetPose)
+void inverseKinematicsDLS(RobotArm6DoF* ramie, double* thetas, const Matrix44* targetPose, int max_iters, double tolerance, double step_size, double lambda)
 {
-    int max_iters = 500;
-    double tolerance = 0.001;
-    double step_size = 0.1;
-    double lambda = 0.1;
 
     Matrix44 fkResults[6];
     Matrix66 J, J_inv_DLS;
