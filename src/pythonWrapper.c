@@ -214,7 +214,6 @@ static PyMethodDef SickMethods[] = {
     {"workspace", workspaceAnalyzerWrapped, METH_VARARGS, "Generuje chmure punktow przestrzeni roboczej"},
     {"ik_dls", inverseKinDLSWrapped, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK DLS) do celu X, Y, Z i konkretnej rotacji."},
     {"yoshikawa", yoshikawaWrapped, METH_VARARGS, "Liczy Manipulability Index Yoshikawy."},
-    
     {NULL, NULL, 0, NULL} 
 };
 
