@@ -111,7 +111,40 @@ void inverseKinematicsDLS(RobotArm6DoF* ramie, double* thetas, const Matrix44* t
             0.5 * (crossX.z + crossY.z + crossZ.z)
         };
 
-        // TODO PATCH: LWP nie wylapuje bledu obrotu 180 stopni (possible rozwiazanie : Trace) 
+        // PROBLEM ^ jesli wektory current i target o 180 stopni odwrocone to iloczyn wektorowy tego nie wylapie
+        // NEED TO PATCH THIS :
+
+        // rotation matrix trace
+        double trace = myVectorDotProduct(&currentRotationX, &targetRotationX) + myVectorDotProduct(&currentRotationY, &targetRotationY) + myVectorDotProduct(&currentRotationZ, &targetRotationZ);
+        double cosTheta = (trace - 1.0) / 2.0;
+        cosTheta = fmax(-1.0, fmin(1.0, cosTheta)); 
+        double theta = acos(cosTheta);
+
+        if (theta > 3.0) // 3.0 rad to ok. 172 stopnie
+        {
+            // znajdujemy najmniej odwrocona os i wymuszamy obrot wokol niej
+            Vector3D axis = {0};
+            if (currentRotationX.x > -0.9) { axis.x = 1.0; }
+            else if (currentRotationY.y > -0.9) { axis.y = 1.0; }
+            else { axis.z = 1.0; }
+            
+            rotationErrorVector.x = axis.x * theta;
+            rotationErrorVector.y = axis.y * theta;
+            rotationErrorVector.z = axis.z * theta;
+        }
+
+        // dla standardoywch katow skalujemy wektor bledu
+        else if (theta > 1e-5) 
+        {
+            // Standardowy wektor rotacji LWP ma długosc sin(theta), a my chcemy, żeby mial długosc rzeczywistego kata theta.
+            double length = myVectorLength(&rotationErrorVector);
+            if (length > 1e-7)
+            {
+                rotationErrorVector.x *= (theta / length);
+                rotationErrorVector.y *= (theta / length);
+                rotationErrorVector.z *= (theta / length);
+            }
+        }
 
         // 3. are we on target?
         double xyzErrorValue = myVectorLength(&xyzErrorVector);
