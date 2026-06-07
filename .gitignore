@@ -4,7 +4,9 @@
 venv
 *.egg-info/
 sickkinematix/__pycache__/
+tests/__pycache__
 tests_c/.outs/
+
 
 # github boilerplate (projects in c) ----------------------------------------------------------------------------------------------------
 
