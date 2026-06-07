@@ -9,6 +9,14 @@
 #define PY_ARRAY_UNIQUE_SYMBOL SICK_KINEMATIX_API // dla kompilatora - zapobiegamy konfliktowi nazw
 #include "numpy/ndarrayobject.h"
 
+// helper walidacyjny - czy dostalismy liste o odpowiedniej dlugosci
+static int check_is_list_of_size(PyObject* obj, Py_ssize_t size) {
+    if (!PySequence_Check(obj) || PySequence_Size(obj) != size) {
+        return 0; 
+    }
+    return 1; 
+}
+
 static void robotArmDestructor(PyObject* capsule)
 {
     // Rzutujemy na nasz wlasciwy typ struktury C
@@ -21,8 +29,21 @@ static PyObject* buildRobotArmWrapped(PyObject* self, PyObject* args)
     PyObject* aPy, *alphaPy, *dPy, *offsetsPy;
     if (!PyArg_ParseTuple(args, "OOOO", &aPy, &alphaPy, &dPy, &offsetsPy)) {return NULL;}
 
+    // walidacja 1: Sprawdzamy czy to w ogole sa listy i czy maja po 6 elementow
+    if (!check_is_list_of_size(aPy, 6) || !check_is_list_of_size(alphaPy, 6) || 
+        !check_is_list_of_size(dPy, 6) || !check_is_list_of_size(offsetsPy, 6)) 
+    {
+        PyErr_SetString(PyExc_ValueError, "All parameters (a, alpha, d, offsets) must be lists of length 6.");
+        return NULL;
+    }
+
     // rozpakowujemy kazda liste i budujemy robota
     RobotArm6DoF* ramie = malloc(sizeof(RobotArm6DoF));
+
+    // walidacja 2: Walidacja malloc'a 
+    if (ramie == NULL) {
+        return PyErr_NoMemory(); // Zwraca pythonowy MemoryError
+    }
 
     PyObject* pomocnicza[] = {aPy, alphaPy, dPy, offsetsPy};
     double* tablicaDocelowa[] = {ramie->a, ramie->alpha, ramie->d, ramie->offsets};
@@ -33,6 +54,14 @@ static PyObject* buildRobotArmWrapped(PyObject* self, PyObject* args)
         {
             PyObject* element = PySequence_GetItem(obiekt, i);
             double value = PyFloat_AsDouble(element);
+
+            // walidacja 3: Sprawdzamy czy w liście nie było stringa albo innego smiecia
+            if (PyErr_Occurred()) {
+                Py_DECREF(element);
+                free(ramie); 
+                return NULL;
+            }
+
             tablicaDocelowa[j][i] = value;
             // PySequence_GetItem tworzy nowa referencje do obiektu:
             Py_DECREF(element);
