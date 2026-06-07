@@ -76,7 +76,14 @@ static PyObject* forwardKinWrapped(PyObject* self, PyObject* args)
     // 1. ROZPAKOWANIE z Pyhona
     double t1, t2, t3, t4, t5, t6;
     PyObject* robotCapsule;
-    if (!PyArg_ParseTuple(args, "Odddddd", &robotCapsule, &t1, &t2, &t3, &t4, &t5, &t6)) {return NULL;}
+    if (!PyArg_ParseTuple(args, "Odddddd", &robotCapsule, &t1, &t2, &t3, &t4, &t5, &t6)) 
+    {return NULL;} // Tutaj python sam wywali blad, jesli t1-t6 nie sa doublami
+
+    // walidacja 1: Upewniamy sie, ze obiekt O to nasza kapsula z robotem
+    if (!PyCapsule_IsValid(robotCapsule, "RobotArm")) {
+        PyErr_SetString(PyExc_TypeError, "Expected input : RobotArm object built with build_robot().");
+        return NULL;
+    }
 
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
     
@@ -89,6 +96,11 @@ static PyObject* forwardKinWrapped(PyObject* self, PyObject* args)
     // 3. pakujemy wyniki spowrotem do pythona
 
     PyObject* lista = PyList_New(7);
+
+    // walidacja 2: sprawdzamy czy Pythonowi udalo sie zaalokowac nowa liste - bledy malloc
+    if (lista == NULL) {
+        return PyErr_NoMemory();
+    }
 
     PyObject* baza = Py_BuildValue("dddddd", 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
     PyList_SetItem(lista, 0, baza);
@@ -107,6 +119,7 @@ static PyObject* forwardKinWrapped(PyObject* self, PyObject* args)
         
         PyObject* wektor = Py_BuildValue("dddddd", x, y, z, zx, zy, zz);
 
+        // PyList_SetItem kradnie referencje, wiec nie musimy robic Py_DECREF(wektor)
         PyList_SetItem(lista, i+1, wektor);
     }
 
