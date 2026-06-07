@@ -148,7 +148,7 @@ static PyObject* inverseKinCCDWrapped(PyObject* self, PyObject* args)
         PyErr_SetString(PyExc_ValueError, "Parameters 'max_iters' and 'tolerance' must be strictly greater than 0.");
         return NULL;
     }
-    
+
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
 
     // 2. przeliczamy, start z pozycji zerowej
@@ -170,6 +170,18 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
     PyObject* robotCapsule;
     if (!PyArg_ParseTuple(args, "On", &robotCapsule, &pointsNumber)) {return NULL;}
     
+    // walidacja 1: Upewniamy sie, ze dostalismy dobrego robota
+    if (!PyCapsule_IsValid(robotCapsule, "RobotArm")) {
+        PyErr_SetString(PyExc_TypeError, "Expected input: RobotArm object built with build_robot().");
+        return NULL;
+    }
+
+    // walidacja 2: Liczba punktow musi byc wieksza niz 0
+    if (pointsNumber <= 0) {
+        PyErr_SetString(PyExc_ValueError, "Number of points must be strictly greater than 0.");
+        return NULL;
+    }
+
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
 
     // wymiar tablicy - dla numpy
@@ -181,9 +193,9 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
     PyObject* z_array = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
     PyObject* yoshikawas = PyArray_SimpleNew(1, dims, NPY_DOUBLE);
 
-    // jesli ktoras z tablic niepoprawnie sie zainicjalizuje to czyscimy
+    // // walidacja 3: jesli ktoras z tablic niepoprawnie sie zainicjalizuje to czyscimy
     if(!x_array || !y_array || !z_array || !yoshikawas) 
-    {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); Py_XDECREF(y_array); Py_XDECREF(yoshikawas); return NULL;}
+    {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); Py_XDECREF(yoshikawas); return NULL;}
 
     // teraz wyciagamy z tych obiektow wskazniki na tablice danych
     double* x_data = (double*) PyArray_DATA((PyArrayObject*) x_array);
