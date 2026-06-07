@@ -137,6 +137,18 @@ static PyObject* inverseKinCCDWrapped(PyObject* self, PyObject* args)
     PyObject* robotCapsule;
     if (!PyArg_ParseTuple(args, "Oddd|ddddddid", &robotCapsule, &tx, &ty, &tz, &t1, &t2, &t3, &t4, &t5, &t6, &max_iters, &tolerance)) {return NULL;}
     
+    // walidacja 1: Upewniamy sie, ze dostalismy dobrego robota
+    if (!PyCapsule_IsValid(robotCapsule, "RobotArm")) {
+        PyErr_SetString(PyExc_TypeError, "Expected input: RobotArm object built with build_robot().");
+        return NULL;
+    }
+
+    // walidacja 2: Sprawdzamy czy parametry algorytmu maja sens matematyczny
+    if (max_iters <= 0 || tolerance <= 0.0) {
+        PyErr_SetString(PyExc_ValueError, "Parameters 'max_iters' and 'tolerance' must be strictly greater than 0.");
+        return NULL;
+    }
+    
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
 
     // 2. przeliczamy, start z pozycji zerowej
