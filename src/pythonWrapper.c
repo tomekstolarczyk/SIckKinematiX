@@ -285,6 +285,12 @@ static PyObject* yoshikawaWrapped(PyObject* self, PyObject* args)
     double t1, t2, t3, t4, t5, t6;
     if (!PyArg_ParseTuple(args, "Odddddd", &robotCapsule, &t1, &t2, &t3, &t4, &t5, &t6)) {return NULL;} 
 
+    // walidacja: Upewniamy sie, ze to nasz robot
+    if (!PyCapsule_IsValid(robotCapsule, "RobotArm")) {
+        PyErr_SetString(PyExc_TypeError, "Expected input: RobotArm object built with build_robot().");
+        return NULL;
+    }
+
     double thetas[] = {t1, t2, t3, t4, t5, t6}; Matrix66 jacobian;
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
 
