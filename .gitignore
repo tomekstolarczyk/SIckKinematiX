@@ -1,67 +1,20 @@
-# mine ----------------------------------------------------------------
+# 1. ŚRODOWISKO PYTHON I CACHE
+venv/
+__pycache__/
+*.pyc
 
-.vscode
-venv
+# 2. BUDOWANIE I PAKIETY (SETUP.PY)
+build/
 *.egg-info/
-sickkinematix/__pycache__/
-tests/__pycache__
+
+# 3. SKOMPILOWANE PLIKI C / WYNIKI (LINUX)
+*.o
+*.so
+*.out
 tests_c/.outs/
 
+# 4. TESTY
+.pytest_cache/
 
-# github boilerplate (projects in c) ----------------------------------------------------------------------------------------------------
-
-# Prerequisites
-*.d
-
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
-
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# debug information files
-*.dwo
+# 5. EDYTORY
+.vscode/
