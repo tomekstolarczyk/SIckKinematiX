@@ -195,7 +195,7 @@ static PyObject* workspaceAnalyzerWrapped(PyObject* self, PyObject* args)
 
     // // walidacja 3: jesli ktoras z tablic niepoprawnie sie zainicjalizuje to czyscimy
     if(!x_array || !y_array || !z_array || !yoshikawas) 
-    {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); Py_XDECREF(yoshikawas); return NULL;}
+    {Py_XDECREF(x_array); Py_XDECREF(y_array); Py_XDECREF(z_array); Py_XDECREF(yoshikawas); return PyErr_NoMemory();}
 
     // teraz wyciagamy z tych obiektow wskazniki na tablice danych
     double* x_data = (double*) PyArray_DATA((PyArrayObject*) x_array);
