@@ -232,6 +232,24 @@ static PyObject* inverseKinDLSWrapped(PyObject* self, PyObject* args)
     if (!PyArg_ParseTuple(args, "OO|ddddddiddd", &robotCapsule, &targetPoseList, &t1, &t2, &t3, &t4, &t5, &t6, &max_iters, &tolerance, &step_size, &lambda))
     {return NULL;} 
 
+    // walidacja 1: Poprawnosc obiektu robota
+    if (!PyCapsule_IsValid(robotCapsule, "RobotArm")) {
+        PyErr_SetString(PyExc_TypeError, "Expected input: RobotArm object built with build_robot().");
+        return NULL;
+    }
+    
+    // walidacja 2: Macierz docelowa musi byc lista 16 elementow
+    if (!check_is_list_of_size(targetPoseList, 16)) {
+        PyErr_SetString(PyExc_ValueError, "Target pose must be a flat list of exactly 16 elements (4x4 matrix).");
+        return NULL;
+    }
+
+    // walidacja 3: Poprawnosc parametrow algorytmu 
+    if (max_iters <= 0 || tolerance <= 0.0 || step_size <= 0.0 || lambda < 0.0) {
+        PyErr_SetString(PyExc_ValueError, "Algorithm parameters 'max_iters', 'tolerance', and 'step_size' must be strictly positive. 'lambda' must be >= 0.");
+        return NULL;
+    }
+
     RobotArm6DoF* ramie = (RobotArm6DoF*)PyCapsule_GetPointer(robotCapsule, "RobotArm");
     double thetas[] = {t1, t2, t3, t4, t5, t6};
 
@@ -240,7 +258,15 @@ static PyObject* inverseKinDLSWrapped(PyObject* self, PyObject* args)
     for(size_t i = 0; i< 16; i++)
     {
         PyObject* item = PySequence_GetItem(targetPoseList, i);
-        targetPoseMatrix.data[i] = PyFloat_AsDouble(item);
+        double value = PyFloat_AsDouble(item);
+
+        // walidacja 4: Sprawdzamy czy uzytkownik nie wsadzil stringa albo innych smieci do listy macierzy
+        if (PyErr_Occurred()) {
+            Py_DECREF(item);
+            return NULL; 
+        }
+
+        targetPoseMatrix.data[i] = value;
         Py_DECREF(item);
     }
 
