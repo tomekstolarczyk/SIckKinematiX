@@ -1,0 +1,17 @@
+# Plik konfiguracyjny
+
+site_name: SICK KINEMATIX
+site_description: 6-DoF Robot Arm Kinematics Solver in pure C
+site_author: Tomek Stolarczyk
+repo_url: https://github.com/tomekstolarczyk/SIckKinematiX
+repo_name: GitHub Repository
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: indigo
+    accent: cyan
+
+nav:
+  - Home: index.md
