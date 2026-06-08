@@ -16,7 +16,7 @@ This project features custom-built solvers for Forward and Inverse Kinematics, a
 > 
 > We have prepared a beautiful, comprehensive documentation website featuring API references, installation guides, and interactive dashboard demos. 
 > 
-> **[Click here to visit the website](https://[TWÓJ_LOGIN].github.io/SIckKinematiX/)** 
+> **[Click here to visit the website](https://tomekstolarczyk.github.io/SIckKinematiX/)** 
 
 ---
 
