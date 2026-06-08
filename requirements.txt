@@ -1,3 +1,10 @@
+# list made with 'pip freeze > requirements.txt' command ran in venv
+# long list of depndencies prob due to the core 3 of them:
+# 1. numpy
+# 2. plotly dash
+# 3. pytest
+# depending on all the rest
+
 blinker==1.9.0
 certifi==2026.5.20
 charset-normalizer==3.4.7
