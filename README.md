@@ -1,4 +1,4 @@
-# 🤖 SICK KINEMATIX
+# SIck KinematiX
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![Core](https://img.shields.io/badge/Core_Engine-Pure_C-red.svg)]()
