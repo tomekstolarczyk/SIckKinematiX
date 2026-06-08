@@ -1,7 +1,7 @@
 # SIck KinematiX
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Core](https://img.shields.io/badge/Core_Engine-Pure_C-red.svg)]()
+[![Core Engine](https://img.shields.io/badge/Core_Engine-Pure_C-red.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **A high-performance, universal 6-DoF Manipulator Kinematics Solver built with pure C and wrapped in a Python API.**
