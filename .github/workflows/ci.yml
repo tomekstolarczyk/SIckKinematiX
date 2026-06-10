@@ -22,13 +22,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install numpy pytest
-
-      - name: Install OpenMP (macOS only)
-        if: runner.os == 'macOS'
-        run: |
-          brew install libomp
-          echo "LDFLAGS=-L/opt/homebrew/lib" >> $GITHUB_ENV
-          echo "CPPFLAGS=-I/opt/homebrew/include" >> $GITHUB_ENV
         
       - name: Build C-extension
         run: |
