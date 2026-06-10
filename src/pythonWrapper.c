@@ -305,13 +305,25 @@ static PyObject* yoshikawaWrapped(PyObject* self, PyObject* args)
 // ponizej tylko boilerplate-mapowanie do pythona --------------------------------------------------------------------------------
 
 static PyMethodDef SickMethods[] = {
-    // {"nazwa_w_pythonie", wskaznik_na_funkcje_c, FLAGA, "docstring"}
-    {"build_robot", buildRobotArmWrapped, METH_VARARGS, "Buduje robota na podstawie parametrów MDH."},
-    {"fk", forwardKinWrapped, METH_VARARGS, "Liczy Kinematyke Prosta (FK) dla 6 katow."},
-    {"ik_ccd", inverseKinCCDWrapped, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK CCD) do celu X, Y, Z."},
-    {"workspace", workspaceAnalyzerWrapped, METH_VARARGS, "Generuje chmure punktow przestrzeni roboczej"},
-    {"ik_dls", inverseKinDLSWrapped, METH_VARARGS, "Liczy Kinematyke Odwrotna (IK DLS) do celu X, Y, Z i konkretnej rotacji."},
-    {"yoshikawa", yoshikawaWrapped, METH_VARARGS, "Liczy Manipulability Index Yoshikawy."},
+    
+    {"build_robot", buildRobotArmWrapped, METH_VARARGS, 
+     "Creates a 6-DoF robot arm structure in C memory using Modified Denavit-Hartenberg (MDH) parameters. Returns a PyCapsule object."},
+    
+    {"fk", forwardKinWrapped, METH_VARARGS, 
+     "Calculates Forward Kinematics (FK). Returns a list containing Cartesian coordinates (X, Y, Z) and rotation axis vectors for the base and all 6 joints."},
+    
+    {"ik_ccd", inverseKinCCDWrapped, METH_VARARGS, 
+     "Solves the Inverse Kinematics problem for a target XYZ position using the Cyclic Coordinate Descent (CCD) algorithm. Fast and robust for position-only tasks."},
+    
+    {"workspace", workspaceAnalyzerWrapped, METH_VARARGS, 
+     "Generates a workspace point cloud using Monte-Carlo sampling and evaluates the Yoshikawa Agility Index for each point. Optimized with OpenMP."},
+    
+    {"ik_dls", inverseKinDLSWrapped, METH_VARARGS, 
+     "Solves the full Inverse Kinematics problem (Position + Orientation) using the Damped Least Squares (DLS) method. Features singularity damping for numerical stability."},
+    
+    {"yoshikawa", yoshikawaWrapped, METH_VARARGS, 
+     "Calculates the Yoshikawa Manipulability Index for a specific pose, indicating the robot's agility and distance from mathematical singularities."},
+     
     {NULL, NULL, 0, NULL} 
 };
 
