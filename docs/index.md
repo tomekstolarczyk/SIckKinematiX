@@ -1,49 +1,62 @@
 # SIck KinematiX 
 
-**6-DoF Manipulator Kinematics Solver built with pure C and Python API**
+**High-Performance 6-DoF Manipulator Kinematics Engine**
 
-This project provides a robust, fast, and universal solver for 6-Degree-of-Freedom robot arms. It features Forward Kinematics, Inverse Kinematics (using CCD and DLS algorithms), and Workspace Analysis (evaluating the Yoshikawa Manipulability Index). All mathematical operations are implemented in pure C for maximum performance, while keeping a user-friendly Python interface.
+SIck KinematiX is a professional-grade, universal solver for 6-Degree-of-Freedom serial manipulators. By offloading complex matrix operations to a custom-built **Pure C Engine**, it achieves near-native performance while providing an intuitive **Pythonic API**.
 
+## Core Capabilities
+* **Universal Modeling:** Supports any 6-DoF robot via Modified Denavit-Hartenberg (MDH) parameters.
+* **Hybrid Solvers:** High-speed positional convergence (CCD) and high-precision pose tracking (DLS).
+* **Agility Mapping:** Real-time workspace analysis evaluating the **Yoshikawa Manipulability Index**.
+* **Parallel Scaling:** Multi-threaded computation optimized with **OpenMP**.
+
+## Requirements
+
+* **Operating System:** Linux (fully optimized with OpenMP multi-threading), Windows, or macOS.
+* **Language Runtimes:** Python >= 3.10 and a C99-compliant compiler (`gcc`, `clang`, or `msvc`).
+* **Core Build Dependencies:** 
+    * `setuptools` (for compiling the C-Extension module)
+    * `numpy >= 2.0.0` (provides C header structures for array handling via NumPy C-API)
+* **Test Stack:** `pytest` (for automated unit testing and validation).
+* **Visualization & UI Stack:** 
+    * `dash` (Plotly Dash framework for the UI server)
+    * `plotly` (for interactive 3D WebGL rendering of the manipulator)
+    
 ## Installation
 
-To install the package locally, clone the repository and run the following commands:
-
 ```bash
-# Install the C-extension package
+# Clone the repository
+git clone [https://github.com/tomekstolarczyk/SIckKinematiX](https://github.com/tomekstolarczyk/SIckKinematiX)
+cd SIckKinematiX
+
+# Install the C-extension package locally
 pip install -e .
-# Install required dependencies for visualization
+
+# Install dashboard requirements
 pip install -r requirements.txt
 ```
 
-## Quick Start & Examples
+## Quick Start 
 
-Here is a quick example of how to build a UR5 robot and calculate Forward Kinematics for a zero-position:
+Build a UR5 robot model and compute Forward Kinematics in 3 lines:
 
 ``` Python
-import sickkinematix.c_kinematix as sk
+import sickkinematix.kinematix as sk
 import math
 
-# Define robot parameters (uR5 here as an example)
+# Define robot's MDH Parameters
+# UR5 as an example:
 a = [0.0, 0.0, -0.425, -0.39225, 0.0, 0.0]
 alpha = [0.0, math.pi/2.0, 0.0, 0.0, math.pi/2.0, -math.pi/2.0]
 d = [0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823]
 offsets = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-# Build the robot 
-robot = sk.build_robot(a, alpha, d, offsets)
+# Initialize C-Engine Robot Object
+robot = sk.robot(a, alpha, d, offsets)
 
-# Calculate Forward Kinematics
-angles = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-results = sk.fk(robot, *angles)
-
-print("End-effector pose (X, Y, Z, Zx, Zy, Zz):")
-print(results[-1])
-```
-
-Expected Output:
-```Plaintext
-End-effector pose (X, Y, Z, Zx, Zy, Zz):
-(0.81725, 0.0, -0.005491, 0.0, 1.0, 0.0)
+# Compute Pose
+pose = sk.forward_kinematics(robot, 0, 0, 0, 0, 0, 0)
+print(f"End-effector Position: {pose[-1][:3]}")
 ```
 
 ## Interactive Dashboard

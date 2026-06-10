@@ -1,9 +1,5 @@
 # API Reference
 
-This page documents the Python API exposed by the `sickkinematix.c_kinematix` C-extension module.
-
----
-
 ### build_robot(a, alpha, d, offsets)
 Builds a 6-DoF robot arm capsule using Modified Denavit-Hartenberg (MDH) parameters.
 
