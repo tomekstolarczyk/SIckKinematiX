@@ -13,7 +13,6 @@ int main(void) {
 
     size_t points = 1000;
 
-    // Alokujemy 4 tablice, dokladnie tak jak w wrapperze Pythona
     double* x = malloc(sizeof(double) * points);
     double* y = malloc(sizeof(double) * points);
     double* z = malloc(sizeof(double) * points);
@@ -21,7 +20,6 @@ int main(void) {
     
     assert(x != NULL && y != NULL && z != NULL && yoshikawas != NULL);
 
-    // ZAKTUALIZOWANE WYWOLANIE
     workspaceAnalysis(&ramie, points, x, y, z, yoshikawas);
 
     // Upewniamy sie, ze cos zostalo zapisane (wartosci nie sa NaN i indeks istnieje)

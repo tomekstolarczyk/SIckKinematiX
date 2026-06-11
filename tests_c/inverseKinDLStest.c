@@ -19,7 +19,6 @@ int main(void) {
     
     double thetas_test[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     
-    // ZAKTUALIZOWANE WYWOLANIE (max_iters, tolerance, step_size, lambda)
     inverseKinematicsDLS(&ramie, thetas_test, &targetPose, 500, 0.001, 0.1, 0.1);
 
     forwardKinematics(&ramie, thetas_test, fkResults);

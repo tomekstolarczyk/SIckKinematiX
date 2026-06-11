@@ -21,7 +21,6 @@ int main(void) {
     // Test
     double thetas_test[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     
-    // ZAKTUALIZOWANE WYWOLANIE (dodano max_iters i tolerance)
     inverseKinematicsCCD(&ramie, thetas_test, &target, 5000, 0.001);
 
     forwardKinematics(&ramie, thetas_test, fkResults);

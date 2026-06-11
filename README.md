@@ -6,6 +6,11 @@
 
 **A high-performance, universal 6-DoF Manipulator Kinematics Solver built with pure C and wrapped in a Python API.**
 
+<p align="center">
+  <video src="docs/media/demo_fk.mp4" width="47%" autoplay loop muted playsinline style="margin-right: 4%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);"></video>
+  <video src="docs/media/demo_ik.mp4" width="47%" autoplay loop muted playsinline style="border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.4);"></video>
+</p>
+
 ---
 
 > 🛑 **STOP! DON'T READ RAW CODE!**

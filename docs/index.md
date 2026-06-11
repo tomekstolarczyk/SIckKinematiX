@@ -61,9 +61,16 @@ pose = sk.forward_kinematics(robot, 0, 0, 0, 0, 0, 0)
 print(f"End-effector Position: {pose[-1][:3]}")
 ```
 
-## Interactive Dashboard
+## Interactive 3D Dashboard
 
-We also provide a fully interactive dashboard built with Plotly Dash. Run it locally:
+SIckKinematiX includes a fully interactive, real-time control and diagnostic dashboard built with Plotly Dash. It allows for immediate verification of numerical kinematics stability and cloud density metrics.
+
+<p align="center">
+  <video src="media/demo_fk.mp4" width="45%" autoplay loop muted playsinline style="margin-right: 4%; border-radius: 6px;"></video>
+  <video src="media/demo_ik.mp4" width="45%" autoplay loop muted playsinline style="border-radius: 6px;"></video>
+</p>
+
+### Running the Dashboard Locally
 
 ```bash
 python dashboard/app.py
