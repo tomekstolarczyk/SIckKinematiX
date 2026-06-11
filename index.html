@@ -334,13 +334,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#interactive-dashboard" class="md-nav__link">
+  <a href="#interactive-3d-dashboard" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Interactive Dashboard
+        Interactive 3D Dashboard
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Interactive 3D Dashboard">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-the-dashboard-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Dashboard Locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -450,13 +467,30 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#interactive-dashboard" class="md-nav__link">
+  <a href="#interactive-3d-dashboard" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Interactive Dashboard
+        Interactive 3D Dashboard
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Interactive 3D Dashboard">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-the-dashboard-locally" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Dashboard Locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -538,8 +572,14 @@ pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </s
 <span class="n">pose</span> <span class="o">=</span> <span class="n">sk</span><span class="o">.</span><span class="n">forward_kinematics</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;End-effector Position: </span><span class="si">{</span><span class="n">pose</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="interactive-dashboard">Interactive Dashboard</h2>
-<p>We also provide a fully interactive dashboard built with Plotly Dash. Run it locally:</p>
+<h2 id="interactive-3d-dashboard">Interactive 3D Dashboard</h2>
+<p>SIckKinematiX includes a fully interactive, real-time control and diagnostic dashboard built with Plotly Dash. It allows for immediate verification of numerical kinematics stability and cloud density metrics.</p>
+<p align="center">
+  <video src="media/demo_fk.mp4" width="45%" autoplay loop muted playsinline style="margin-right: 4%; border-radius: 6px;"></video>
+  <video src="media/demo_ik.mp4" width="45%" autoplay loop muted playsinline style="border-radius: 6px;"></video>
+</p>
+
+<h3 id="running-the-dashboard-locally">Running the Dashboard Locally</h3>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>dashboard/app.py
 </code></pre></div>
 
