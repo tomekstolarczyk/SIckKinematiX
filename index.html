@@ -290,10 +290,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-capabilities" class="md-nav__link">
+  <a href="#technical-features-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Capabilities
+        Technical Features Overview
       
     </span>
   </a>
@@ -406,10 +406,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-capabilities" class="md-nav__link">
+  <a href="#technical-features-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Capabilities
+        Technical Features Overview
       
     </span>
   </a>
@@ -483,12 +483,14 @@
 <h1 id="sick-kinematix">SIck KinematiX</h1>
 <p><strong>High-Performance 6-DoF Manipulator Kinematics Engine</strong></p>
 <p>SIck KinematiX is a professional-grade, universal solver for 6-Degree-of-Freedom serial manipulators. By offloading complex matrix operations to a custom-built <strong>Pure C Engine</strong>, it achieves near-native performance while providing an intuitive <strong>Pythonic API</strong>.</p>
-<h2 id="core-capabilities">Core Capabilities</h2>
+<h2 id="technical-features-overview">Technical Features Overview</h2>
 <ul>
-<li><strong>Universal Modeling:</strong> Supports any 6-DoF robot via Modified Denavit-Hartenberg (MDH) parameters.</li>
-<li><strong>Hybrid Solvers:</strong> High-speed positional convergence (CCD) and high-precision pose tracking (DLS).</li>
-<li><strong>Agility Mapping:</strong> Real-time workspace analysis evaluating the <strong>Yoshikawa Manipulability Index</strong>.</li>
-<li><strong>Parallel Scaling:</strong> Multi-threaded computation optimized with <strong>OpenMP</strong>.</li>
+<li><strong>Custom Computational Core:</strong> A proprietary matrix math library (4x4 and 6x6 operations, Gauss-Jordan inversion, and 3D vector math) written entirely from scratch in pure C for absolute efficiency.</li>
+<li><strong>Universal MDH Engine:</strong> Dynamically parses Modified Denavit-Hartenberg parameters for any serial 6-DoF arm.</li>
+<li><strong>Forward Kinematics (FK):</strong> Fast transform matrix chain calculation delivering live joint positions and rotation axes.</li>
+<li><strong>Inverse Kinematics (IK) &amp; Hybrid Solvers:</strong> High-speed positional convergence via <strong>CCD</strong> and precise 6D pose tracking (Position + Orientation) via <strong>Damped Least Squares (DLS)</strong>.</li>
+<li><strong>Agility Mapping:</strong> Parallelized Monte-Carlo workspace simulation using <strong>OpenMP</strong> to compute the Yoshikawa Manipulability Index.</li>
+<li><strong>Interactive Dashboard:</strong> Real-time 3D manipulator control panel environment built using <strong>Plotly Dash</strong>.</li>
 </ul>
 <h2 id="requirements">Requirements</h2>
 <ul>
@@ -508,7 +510,7 @@
 </ul>
 <h2 id="installation">Installation</h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># Clone the repository</span>
-git<span class="w"> </span>clone<span class="w"> </span><span class="o">[</span>https://github.com/tomekstolarczyk/SIckKinematiX<span class="o">](</span>https://github.com/tomekstolarczyk/SIckKinematiX<span class="o">)</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/tomekstolarczyk/SIckKinematiX
 <span class="nb">cd</span><span class="w"> </span>SIckKinematiX
 
 <span class="c1"># Install the C-extension package locally</span>
@@ -537,8 +539,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </s
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;End-effector Position: </span><span class="si">{</span><span class="n">pose</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="interactive-dashboard">Interactive Dashboard</h2>
-<p>We also provide a fully interactive dashboard built with Plotly Dash to visualize the robot's kinematics and workspace. Run it locally:
-Bash</p>
+<p>We also provide a fully interactive dashboard built with Plotly Dash. Run it locally:</p>
 <div class="highlight"><pre><span></span><code>python<span class="w"> </span>dashboard/app.py
 </code></pre></div>
 
