@@ -5,7 +5,6 @@ echo "====================================="
 
 mkdir -p tests_c/.outs
 
-# Lista dokładnych nazw Twoich plików
 TESTS=(
     "forwardKinTest"
     "inverseKinCCDtest"
