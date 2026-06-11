@@ -4,6 +4,11 @@
 
 SIck KinematiX is a professional-grade, universal solver for 6-Degree-of-Freedom serial manipulators. By offloading complex matrix operations to a custom-built **Pure C Engine**, it achieves near-native performance while providing an intuitive **Pythonic API**.
 
+<p align="center">
+  <video src="media/demo_fk.mp4" width="45%" autoplay loop muted playsinline style="margin-right: 4%; border-radius: 6px;"></video>
+  <video src="media/demo_ik.mp4" width="45%" autoplay loop muted playsinline style="border-radius: 6px;"></video>
+</p>
+
 ## Technical Features Overview
 * **Custom Computational Core:** A proprietary matrix math library (4x4 and 6x6 operations, Gauss-Jordan inversion, and 3D vector math) written entirely from scratch in pure C for absolute efficiency.
 * **Universal MDH Engine:** Dynamically parses Modified Denavit-Hartenberg parameters for any serial 6-DoF arm.
