@@ -4,11 +4,13 @@
 
 SIck KinematiX is a professional-grade, universal solver for 6-Degree-of-Freedom serial manipulators. By offloading complex matrix operations to a custom-built **Pure C Engine**, it achieves near-native performance while providing an intuitive **Pythonic API**.
 
-## Core Capabilities
-* **Universal Modeling:** Supports any 6-DoF robot via Modified Denavit-Hartenberg (MDH) parameters.
-* **Hybrid Solvers:** High-speed positional convergence (CCD) and high-precision pose tracking (DLS).
-* **Agility Mapping:** Real-time workspace analysis evaluating the **Yoshikawa Manipulability Index**.
-* **Parallel Scaling:** Multi-threaded computation optimized with **OpenMP**.
+## Technical Features Overview
+* **Custom Computational Core:** A proprietary matrix math library (4x4 and 6x6 operations, Gauss-Jordan inversion, and 3D vector math) written entirely from scratch in pure C for absolute efficiency.
+* **Universal MDH Engine:** Dynamically parses Modified Denavit-Hartenberg parameters for any serial 6-DoF arm.
+* **Forward Kinematics (FK):** Fast transform matrix chain calculation delivering live joint positions and rotation axes.
+* **Inverse Kinematics (IK) & Hybrid Solvers:** High-speed positional convergence via **CCD** and precise 6D pose tracking (Position + Orientation) via **Damped Least Squares (DLS)**.
+* **Agility Mapping:** Parallelized Monte-Carlo workspace simulation using **OpenMP** to compute the Yoshikawa Manipulability Index.
+* **Interactive Dashboard:** Real-time 3D manipulator control panel environment built using **Plotly Dash**.
 
 ## Requirements
 
@@ -26,7 +28,7 @@ SIck KinematiX is a professional-grade, universal solver for 6-Degree-of-Freedom
 
 ```bash
 # Clone the repository
-git clone [https://github.com/tomekstolarczyk/SIckKinematiX](https://github.com/tomekstolarczyk/SIckKinematiX)
+git clone https://github.com/tomekstolarczyk/SIckKinematiX
 cd SIckKinematiX
 
 # Install the C-extension package locally
@@ -61,8 +63,7 @@ print(f"End-effector Position: {pose[-1][:3]}")
 
 ## Interactive Dashboard
 
-We also provide a fully interactive dashboard built with Plotly Dash to visualize the robot's kinematics and workspace. Run it locally:
-Bash
+We also provide a fully interactive dashboard built with Plotly Dash. Run it locally:
 
 ```bash
 python dashboard/app.py
