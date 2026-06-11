@@ -1,46 +1,29 @@
 #include <stdio.h>
+#include <assert.h>
+#include <math.h>
 #include "../src/jacobian.h"
 
-int main(void)
-{
+int main(void) {
     RobotArm6DoF ramie = {
-        // a - przesunięcia wzdłuż osi X (długości głównych kości)
         {0.0, 0.0, -0.425, -0.39225, 0.0, 0.0}, 
-        // alpha - skręcenia wokół osi X (w radianach)
         {0.0, M_PI/2.0, 0.0, 0.0, M_PI/2.0, -M_PI/2.0},
-        // d - przesunięcia wzdłuż osi Z (wysokość bazy i odsunięcia nadgarstka)
         {0.089159, 0.0, 0.0, 0.10915, 0.09465, 0.0823},
-        // offsets - ewentualne początkowe offsety kątowe 
         {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}
     };
 
     double thetas[] = {0.5, 0.3, -0.4, 0.8, 1.2, -0.2};
-
-    // build jacobian
-    Matrix66 jacobian;
+    Matrix66 jacobian, inverted, identityCheck;
+    
     calculateJacobian(&ramie, thetas, &jacobian);
-    printMatrix66(&jacobian);
-
-    // transposed jacobian
-    Matrix66 transposed;
-    transpose6x6Matrix(&jacobian, &transposed);
-
-    Matrix66 inverted;
     int status = gaussJordan66MatrixInversion(&jacobian, &inverted);
+    
+    assert(status == 1); // Odwracanie musi sie udac dla dobrej pozy
 
-    if (status == 1) {
-        printf("Sukces! Macierz odwrocona.\n");
-        printMatrix66(&inverted); 
-
-        printf("check A*A^(-1)=?:\n");
-        Matrix66 identityCheck;
-        multiply6x6Matrix(&jacobian, &inverted, &identityCheck);
-        printMatrix66(&identityCheck);
-    } 
-    else 
-    {
-        printf("BLAD: Macierz osobliwa\n");
+    multiply6x6Matrix(&jacobian, &inverted, &identityCheck);
+    for(int i = 0; i < 6; i++) {
+        assert(fabs(identityCheck.data[i * 6 + i] - 1.0) < 1e-6); 
     }
+
+    printf("[PASS] jacobianTest\n");
+    return 0;
 }
-
-
