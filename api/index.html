@@ -503,78 +503,79 @@
 
 
 <h1 id="api-reference">API Reference</h1>
-<h3 id="build_robota-alpha-d-offsets">build_robot(a, alpha, d, offsets)</h3>
+<hr />
+<h2 id="build_robota-alpha-d-offsets"><code>build_robot(a, alpha, d, offsets)</code></h2>
 <p>Builds a 6-DoF robot arm capsule using Modified Denavit-Hartenberg (MDH) parameters.</p>
 <ul>
 <li><strong>Parameters:</strong><ul>
-<li><code>a</code> (list of 6 floats): Link lengths.</li>
-<li><code>alpha</code> (list of 6 floats): Link twists.</li>
-<li><code>d</code> (list of 6 floats): Link offsets.</li>
-<li><code>offsets</code> (list of 6 floats): Joint angle offsets.</li>
+<li><code>a</code> <em>(list of 6 floats)</em>: Link lengths.</li>
+<li><code>alpha</code> <em>(list of 6 floats)</em>: Link twists.</li>
+<li><code>d</code> <em>(list of 6 floats)</em>: Link offsets.</li>
+<li><code>offsets</code> <em>(list of 6 floats)</em>: Joint angle offsets.</li>
 </ul>
 </li>
 <li><strong>Returns:</strong> A <code>PyCapsule</code> object containing the C-struct of the robot.</li>
 <li><strong>Raises:</strong> <code>ValueError</code> if lists are not exactly 6 elements long. <code>TypeError</code> if elements are not numbers.</li>
 </ul>
 <hr />
-<h3 id="fkrobot-t1-t2-t3-t4-t5-t6">fk(robot, t1, t2, t3, t4, t5, t6)</h3>
+<h2 id="fkrobot-t1-t2-t3-t4-t5-t6"><code>fk(robot, t1, t2, t3, t4, t5, t6)</code></h2>
 <p>Calculates the Forward Kinematics for a given set of joint angles.</p>
 <ul>
 <li><strong>Parameters:</strong><ul>
-<li><code>robot</code> (PyCapsule): The robot object returned by <code>build_robot</code>.</li>
-<li><code>t1</code>...<code>t6</code> (float): Joint angles in radians.</li>
+<li><code>robot</code> <em>(PyCapsule)</em>: The robot object returned by <code>build_robot</code>.</li>
+<li><code>t1</code>...<code>t6</code> <em>(float)</em>: Joint angles in radians.</li>
 </ul>
 </li>
 <li><strong>Returns:</strong> A list of 7 tuples. Each tuple contains 6 floats <code>(X, Y, Z, Zx, Zy, Zz)</code> representing the Cartesian position and the Z-axis rotation vector for the base and each of the 6 joints.</li>
 </ul>
 <hr />
-<h3 id="ik_ccdrobot-tx-ty-tz-t1-t2-t3-t4-t5-t6-max_iters-tolerance">ik_ccd(robot, tx, ty, tz, [t1, t2, t3, t4, t5, t6], [max_iters], [tolerance])</h3>
+<h2 id="ik_ccdrobot-tx-ty-tz-t1-t2-t3-t4-t5-t6-max_iters-tolerance"><code>ik_ccd(robot, tx, ty, tz, [t1, t2, t3, t4, t5, t6], [max_iters], [tolerance])</code></h2>
 <p>Solves Inverse Kinematics for a target XYZ position using the Cyclic Coordinate Descent (CCD) algorithm.</p>
 <ul>
 <li><strong>Parameters:</strong><ul>
-<li><code>robot</code> (PyCapsule): The robot object.</li>
-<li><code>tx</code>, <code>ty</code>, <code>tz</code> (float): Target X, Y, Z coordinates in meters.</li>
-<li><code>t1</code>...<code>t6</code> (float, optional): Initial joint angles guess. Defaults to <code>0.0</code>.</li>
-<li><code>max_iters</code> (int, optional): Maximum iterations. Defaults to <code>5000</code>.</li>
-<li><code>tolerance</code> (float, optional): Acceptable error margin. Defaults to <code>0.001</code>.</li>
+<li><code>robot</code> <em>(PyCapsule)</em>: The robot object.</li>
+<li><code>tx</code>, <code>ty</code>, <code>tz</code> <em>(float)</em>: Target X, Y, Z coordinates in meters.</li>
+<li><code>t1</code>...<code>t6</code> <em>(float, optional)</em>: Initial joint angles guess. Defaults to <code>0.0</code>.</li>
+<li><code>max_iters</code> <em>(int, optional)</em>: Maximum iterations. Defaults to <code>5000</code>.</li>
+<li><code>tolerance</code> <em>(float, optional)</em>: Acceptable error margin. Defaults to <code>0.001</code>.</li>
 </ul>
 </li>
 <li><strong>Returns:</strong> A tuple of 6 floats representing the calculated joint angles in radians.</li>
 </ul>
 <hr />
-<h3 id="ik_dlsrobot-target_pose_list-t1t6-max_iters-tolerance-step_size-lambda">ik_dls(robot, target_pose_list, [t1...t6], [max_iters], [tolerance], [step_size], [lambda])</h3>
+<h2 id="ik_dlsrobot-target_pose_list-t1t6-max_iters-tolerance-step_size-lambda"><code>ik_dls(robot, target_pose_list, [t1...t6], [max_iters], [tolerance], [step_size], [lambda])</code></h2>
 <p>Solves Inverse Kinematics for a target 4x4 pose (Position + Rotation) using Damped Least Squares (DLS).</p>
 <ul>
 <li><strong>Parameters:</strong><ul>
-<li><code>robot</code> (PyCapsule): The robot object.</li>
-<li><code>target_pose_list</code> (list of 16 floats): A flat 4x4 transformation matrix representing the target pose.</li>
-<li><code>step_size</code> (float, optional): Integration step size. Defaults to <code>0.1</code>.</li>
-<li><code>lambda</code> (float, optional): Damping factor for singularities. Defaults to <code>0.1</code>.</li>
+<li><code>robot</code> <em>(PyCapsule)</em>: The robot object.</li>
+<li><code>target_pose_list</code> <em>(list of 16 floats)</em>: A flat 4x4 transformation matrix representing the target pose.</li>
+<li><code>step_size</code> <em>(float, optional)</em>: Integration step size. Defaults to <code>0.1</code>.</li>
+<li><code>lambda</code> <em>(float, optional)</em>: Damping factor for singularities. Defaults to <code>0.1</code>.</li>
 </ul>
 </li>
 <li><strong>Returns:</strong> A tuple of 6 floats representing the joint angles.</li>
 </ul>
 <hr />
-<h3 id="workspacerobot-pointsnumber">workspace(robot, pointsNumber)</h3>
+<h2 id="workspacerobot-pointsnumber"><code>workspace(robot, pointsNumber)</code></h2>
 <p>Generates a random point cloud representing the robot's reachable workspace and evaluates agility.</p>
 <ul>
 <li><strong>Parameters:</strong><ul>
-<li><code>robot</code> (PyCapsule): The robot object.</li>
-<li><code>pointsNumber</code> (int): Number of Monte-Carlo samples to generate.</li>
+<li><code>robot</code> <em>(PyCapsule)</em>: The robot object.</li>
+<li><code>pointsNumber</code> <em>(int)</em>: Number of Monte-Carlo samples to generate.</li>
 </ul>
 </li>
 <li><strong>Returns:</strong> A tuple of 4 NumPy arrays <code>(X, Y, Z, Yoshikawa_Index)</code>.</li>
 </ul>
 <hr />
-<h3 id="yoshikawarobot-t1-t2-t3-t4-t5-t6">yoshikawa(robot, t1, t2, t3, t4, t5, t6)</h3>
+<h2 id="yoshikawarobot-t1-t2-t3-t4-t5-t6"><code>yoshikawa(robot, t1, t2, t3, t4, t5, t6)</code></h2>
 <p>Calculates the Yoshikawa Manipulability Index for a specific pose, indicating how far the robot is from a singularity.</p>
 <ul>
 <li><strong>Parameters:</strong><ul>
-<li><code>robot</code> (PyCapsule): The robot object.</li>
-<li><code>t1</code>...<code>t6</code> (float): Joint angles in radians.</li>
+<li><code>robot</code> <em>(PyCapsule)</em>: The robot object.</li>
+<li><code>t1</code>...<code>t6</code> <em>(float)</em>: Joint angles in radians.</li>
 </ul>
 </li>
-<li><strong>Returns:</strong> A <code>float</code> representing the manipulability index <code>w = sqrt(det(J * J^T))</code>.</li>
+<li><strong>Returns:</strong> A <code>float</code> representing the manipulability index $w = \sqrt{\det(J J^T)}$.</li>
 </ul>
 
 
