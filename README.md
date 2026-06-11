@@ -6,9 +6,10 @@
 
 **A high-performance, universal 6-DoF Manipulator Kinematics Solver built with pure C and wrapped in a Python API.**
 
-| Forward Kinematics | Inverse Kinematics (DLS) |
-| :---: | :---: |
-| ![Forward Kinematics Demo](docs/media/demo_fk.gif) | ![Inverse Kinematics Demo](docs/media/demo_ik.gif) |
+<p align="center">
+  <img src="docs/media/demo_fk.gif" width="48%" style="margin-right: 2%; border-radius: 6px;" alt="Forward Kinematics Demo" />
+  <img src="docs/media/demo_ik.gif" width="48%" style="border-radius: 6px;" alt="Inverse Kinematics Demo" />
+</p>
 
 ---
 
