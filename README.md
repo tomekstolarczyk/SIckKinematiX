@@ -34,16 +34,15 @@ SIckKinematiX/
 └── tests_c/             # C Unit Tests
 ```
 
-## Development & Changelog
+## Development, Testing & Changelog
 For a comprehensive breakdown of release history, implementation steps, and engineering updates, please consult the official developer logs:
 📄 **[Read the CHANGELOG.md](CHANGELOG.md)**
 
-## Automated Testing
-Python Unit Tests (pytest)
+**Python Unit Tests (pytest)**
 ```bash
 pytest tests/
 ```
-Native C Engine Unit Tests
+**Native C Engine Unit Tests**
 ```bash
 chmod +x run_c_tests.sh
 ./run_c_tests.sh
@@ -57,7 +56,7 @@ This project was built from scratch utilizing the following academic reviews, re
 * **Course Framework:** Developed as the final project deliverable for the *Implementacja bibliotek i pakietów do analizy danych (Data Science Library Implementation, 2026)* course within the Data Science program, led by [**Prof. Marek Gągolewski**](https://github.com/gagolews) at the Faculty of Mathematics and Information Science, Warsaw University of Technology.
 
 ### Kinematics, Modeling & Optimization
-* **MDH Parameters:** [*How to Calculate DH Parameters for Robotic Arms: A Beginner's Guide*](https://www.youtube.com/watch?v=rA9tm0gT5vY) & [*Universal Robots Official Kinematics Specifications*](https://www.universal-robots.com/articles/ur/application-installation/dh-parameters-for-calculations-of-kinematics-and-dynamics/).
+* **MDH Parameters:** [*How to Calculate DH Parameters for Robotic Arms: A Beginner's Guide*](https://www.fusybots.com/post/how-to-calculate-dh-parameters-for-robotic-arms-a-beginner-s-guide) & [*Universal Robots Official Kinematics Specifications*](https://www.universal-robots.com/articles/ur/application-installation/dh-parameters-for-calculations-of-kinematics-and-dynamics/).
 * **Forward Kinematics:** [*Mastering Forward Kinematics for 6-DOF Robots: A Complete Guide*](https://www.fusybots.com/post/mastering-forward-kinematics-for-6-dof-robots-a-complete-guide).
 * **Inverse Kinematics Frameworks:** [*A Systematic Review of Inverse Kinematics Methods for Fixed-Base Serial Manipulators (ResearchGate)*](https://www.researchgate.net/publication/394449259_A_Systematic_Review_of_Inverse_Kinematics_Methods_for_Fixed-Base_Serial_Manipulators_Analytical_Numerical_and_Machine_Learning_Methods) and [*Inverse Kinematics: A Review of Existing Techniques (ResearchGate)*](https://www.researchgate.net/publication/273166356_Inverse_Kinematics_a_review_of_existing_techniques_and_introduction_of_a_new_fast_iterative_solver).
 * **CCD Algorithm:** [*Inverse Kinematics (Robotics) – Cyclic Coordinate Descent in 3D Space*](https://jashuang1983.wordpress.com/inverse-kinematics-cyclic-coordinate-descent-in-3d-space/).
