@@ -70,7 +70,7 @@ SIckKinematiX includes a fully interactive, real-time control and diagnostic das
   <video src="media/demo_ik.mp4" width="45%" autoplay loop muted playsinline style="border-radius: 6px;"></video>
 </p>
 
-### Running the Dashboard Locally
+**Running the Dashboard Locally:**
 
 ```bash
 python dashboard/app.py
